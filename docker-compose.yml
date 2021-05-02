@@ -1,9 +1,30 @@
 version: "3.4"
 
+networks:
+  mongo-database:
+
 services:
   tradistonks-api:
     build:
       context: .
       dockerfile: Dockerfile.dev
+    volumes:
+      - ./src/:/usr/src/app/src/
+    networks:
+      - mongo-database
     ports:
       - 3000:3000
+    env_file: .env
+    environment:
+      MONGODB_URL: ${MONGODB_URL}
+      JWT_SECRET: ${JWT_SECRET}
+
+  mongodb:
+    image: mongo:latest
+    volumes:
+      - ./.docker/mongodb/data/db/:/data/db/
+      - ./.docker/mongodb/data/log/:/var/log/mongodb/
+    networks:
+      - mongo-database
+    ports:
+      - 27018:27017
