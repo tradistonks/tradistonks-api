@@ -5,7 +5,9 @@ import { UsersModule } from './users/users.module';
 
 @Module({
   imports: [
-    MongooseModule.forRoot(process.env.MONGODB_URL),
+    MongooseModule.forRoot(process.env.MONGODB_URL, {
+      useCreateIndex: true,
+    }),
     AuthModule,
     UsersModule,
   ],
