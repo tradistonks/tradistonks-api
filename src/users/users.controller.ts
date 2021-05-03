@@ -6,11 +6,11 @@ import {
   NotFoundException,
   Param,
   Post,
-  Request,
   UseGuards,
 } from '@nestjs/common';
+import { AuthUser } from 'src/auth/decorators/auth-user.decorator';
 import { JwtAuthGuard } from 'src/auth/guards/jwt-auth.guard';
-import { RequestWithUser } from 'src/auth/interfaces/request-with-user.interface';
+import { User } from 'src/schemas/user.schema';
 import { CreateUserDTO } from './dto/create-user.dto';
 import { UsersService } from './users.service';
 
@@ -34,8 +34,8 @@ export class UsersController {
 
   @UseGuards(JwtAuthGuard)
   @Get('me')
-  async getCurrentUser(@Request() req: RequestWithUser) {
-    return req.user;
+  async getCurrentUser(@AuthUser() user: User) {
+    return user;
   }
 
   @Get(':username')

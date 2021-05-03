@@ -18,6 +18,10 @@ export class UsersService {
     return await this.userModel.findOne({ username });
   }
 
+  async findByEmail(email: string) {
+    return await this.userModel.findOne({ email });
+  }
+
   async isEmailTaken(email: string) {
     return await this.userModel.exists({ email });
   }
