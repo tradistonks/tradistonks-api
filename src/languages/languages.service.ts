@@ -15,7 +15,7 @@ export class LanguagesService {
     return this.languageModel.find();
   }
 
-  getLanguage(id: string | MongooseTypes.ObjectId) {
+  getLanguageById(id: string | MongooseTypes.ObjectId) {
     return this.languageModel.findById(id);
   }
 

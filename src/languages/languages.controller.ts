@@ -53,7 +53,7 @@ export class LanguagesController {
   @UseGuards(JwtAuthGuard)
   @Get(':language_id')
   async getLanguage(@Param() params: GetLanguageParamsDTO) {
-    const language = await this.languagesService.getLanguage(
+    const language = await this.languagesService.getLanguageById(
       params.language_id,
     );
 
