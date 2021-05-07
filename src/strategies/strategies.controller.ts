@@ -12,6 +12,7 @@ import {
 import { Types as MongooseTypes } from 'mongoose';
 import { AuthUser } from 'src/auth/decorators/auth-user.decorator';
 import { JwtAuthGuard } from 'src/auth/guards/jwt-auth.guard';
+import { LanguagesService } from 'src/languages/languages.service';
 import { RunnerService } from 'src/runner/runner.service';
 import { User } from 'src/schemas/user.schema';
 import { CreateStrategyBodyDTO } from './dto/create-strategy-body.dto';
@@ -25,6 +26,7 @@ import { StrategiesService } from './strategies.service';
 export class StrategiesController {
   constructor(
     private strategiesService: StrategiesService,
+    private languagesService: LanguagesService,
     private runnerService: RunnerService,
   ) {}
 
@@ -96,9 +98,9 @@ export class StrategiesController {
     @AuthUser() user: User,
     @Param() params: RunStrategyParamsDTO,
   ) {
-    const strategy = await this.strategiesService.getStrategyById(
-      params.strategy_id,
-    );
+    const strategy = await this.strategiesService
+      .getStrategyById(params.strategy_id)
+      .lean();
 
     if (!strategy) {
       throw new NotFoundException("This strategy doesn't exists");
@@ -108,10 +110,20 @@ export class StrategiesController {
       throw new ForbiddenException("You don't have access to this strategy");
     }
 
+    const language = await this.languagesService
+      .getLanguageById(strategy.language as MongooseTypes.ObjectId)
+      .lean();
+
+    if (!language) {
+      throw new NotFoundException(
+        "This language used in this strategy doesn't exists",
+      );
+    }
+
     return await this.runnerService.run({
       files: strategy.files,
-      compileScript: '/usr/local/gcc-11.1.0/bin/gcc src/main.c -o out',
-      runScript: './out',
+      compileScript: language.compile_script,
+      runScript: language.run_script,
     });
   }
 }

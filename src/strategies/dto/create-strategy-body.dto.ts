@@ -10,6 +10,7 @@ import {
 } from 'class-validator';
 import { ArePropertiesUnique } from '../validators/are-properties-unique.validator';
 import { IsAbsoluteFilePath } from '../validators/is-absolute-file-path.validator';
+import { IsExistingLanguageId } from '../validators/is-existing-language-id.validator';
 
 export class CreateStrategyBodyFilesDTO {
   @IsString()
@@ -29,7 +30,7 @@ export class CreateStrategyBodyDTO {
   @MaxLength(320)
   name: string;
 
-  @IsString()
+  @IsExistingLanguageId()
   language: string;
 
   @IsArray()

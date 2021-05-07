@@ -19,6 +19,10 @@ export class LanguagesService {
     return this.languageModel.findById(id);
   }
 
+  async existsLanguageById(id: string | MongooseTypes.ObjectId) {
+    return await this.languageModel.exists({ _id: id });
+  }
+
   createLanguage(data: CreateLanguageBodyDTO) {
     return this.languageModel.create(data);
   }

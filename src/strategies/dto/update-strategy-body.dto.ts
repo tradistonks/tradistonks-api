@@ -11,6 +11,7 @@ import {
 } from 'class-validator';
 import { ArePropertiesUnique } from '../validators/are-properties-unique.validator';
 import { IsAbsoluteFilePath } from '../validators/is-absolute-file-path.validator';
+import { IsExistingLanguageId } from '../validators/is-existing-language-id.validator';
 
 export class UpdateStrategyBodyFilesDTO {
   @IsString()
@@ -32,7 +33,7 @@ export class UpdateStrategyBodyDTO {
   name?: string;
 
   @IsOptional()
-  @IsString()
+  @IsExistingLanguageId()
   language?: string;
 
   @IsOptional()
