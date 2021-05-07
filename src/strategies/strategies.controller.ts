@@ -12,16 +12,21 @@ import {
 import { Types as MongooseTypes } from 'mongoose';
 import { AuthUser } from 'src/auth/decorators/auth-user.decorator';
 import { JwtAuthGuard } from 'src/auth/guards/jwt-auth.guard';
+import { RunnerService } from 'src/runner/runner.service';
 import { User } from 'src/schemas/user.schema';
 import { CreateStrategyBodyDTO } from './dto/create-strategy-body.dto';
 import { GetStrategyParamsDTO } from './dto/get-strategy-params.dto';
+import { RunStrategyParamsDTO } from './dto/run-strategy-params.dto';
 import { UpdateStrategyBodyDTO } from './dto/update-strategy-body.dto';
 import { UpdateStrategyParamsDTO } from './dto/update-strategy-params.dto';
 import { StrategiesService } from './strategies.service';
 
 @Controller('strategies')
 export class StrategiesController {
-  constructor(private strategiesService: StrategiesService) {}
+  constructor(
+    private strategiesService: StrategiesService,
+    private runnerService: RunnerService,
+  ) {}
 
   @UseGuards(JwtAuthGuard)
   @Post()
@@ -83,5 +88,30 @@ export class StrategiesController {
     );
 
     return updatedStrategy.toObject();
+  }
+
+  @UseGuards(JwtAuthGuard)
+  @Post(':strategy_id/run')
+  async runStrategy(
+    @AuthUser() user: User,
+    @Param() params: RunStrategyParamsDTO,
+  ) {
+    const strategy = await this.strategiesService.getStrategyById(
+      params.strategy_id,
+    );
+
+    if (!strategy) {
+      throw new NotFoundException("This strategy doesn't exists");
+    }
+
+    if (!user._id.equals(strategy.user as MongooseTypes.ObjectId)) {
+      throw new ForbiddenException("You don't have access to this strategy");
+    }
+
+    return await this.runnerService.run({
+      files: strategy.revisions[strategy.revisions.length - 1].files,
+      compileScript: '/usr/local/gcc-11.1.0/bin/gcc src/main.c -o out',
+      runScript: './out',
+    });
   }
 }

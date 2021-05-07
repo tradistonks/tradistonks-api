@@ -1,4 +1,5 @@
 import { Module } from '@nestjs/common';
+import { RunnerModule } from 'src/runner/runner.module';
 import { SchemasModule } from 'src/schemas/schemas.module';
 import { StrategiesController } from './strategies.controller';
 import { StrategiesService } from './strategies.service';
@@ -7,6 +8,6 @@ import { StrategiesService } from './strategies.service';
   controllers: [StrategiesController],
   providers: [StrategiesService],
   exports: [StrategiesService],
-  imports: [SchemasModule],
+  imports: [SchemasModule, RunnerModule],
 })
 export class StrategiesModule {}

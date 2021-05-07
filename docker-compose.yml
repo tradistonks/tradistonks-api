@@ -1,7 +1,8 @@
 version: "3.4"
 
 networks:
-  mongo-database:
+  mongodb-network:
+  godbox-network:
 
 services:
   tradistonks-api:
@@ -11,12 +12,14 @@ services:
     volumes:
       - ./src/:/usr/src/app/src/
     networks:
-      - mongo-database
+      - mongodb-network
+      - godbox-network
     ports:
       - 3000:3000
     env_file: .env
     environment:
       MONGODB_URL: ${MONGODB_URL}
+      GODBOX_URL: ${GODBOX_URL}
       JWT_SECRET: ${JWT_SECRET}
 
   mongodb:
@@ -25,6 +28,12 @@ services:
       - ./.docker/mongodb/data/db/:/data/db/
       - ./.docker/mongodb/data/log/:/var/log/mongodb/
     networks:
-      - mongo-database
+      - mongodb-network
     ports:
       - 27018:27017
+
+  godbox:
+    image: quantumsheep/godbox
+    privileged: true
+    networks:
+      - godbox-network
