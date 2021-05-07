@@ -33,6 +33,8 @@ export class UsersController {
     }
 
     const user = await this.usersService.createUser(body);
+
+    delete user.password;
     return user.toObject({ versionKey: false });
   }
 
