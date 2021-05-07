@@ -1,4 +1,5 @@
 import {
+  isString,
   registerDecorator,
   ValidationArguments,
   ValidationOptions,
@@ -6,32 +7,29 @@ import {
   ValidatorConstraintInterface,
 } from 'class-validator';
 
-export function IsEqualTo(
-  property: string,
+export function IsAbsoluteFilePath(
   validationOptions?: ValidationOptions,
 ): PropertyDecorator {
   return (object, propertyName) => {
     registerDecorator({
-      name: 'isEqualTo',
+      name: 'isAbsoluteFilePath',
       target: object.constructor,
       propertyName: propertyName.toString(),
       options: validationOptions,
-      constraints: [property, propertyName],
       validator: MatchConstraint,
     });
   };
 }
 
-@ValidatorConstraint({ name: 'IsEqualTo' })
+@ValidatorConstraint({ name: 'IsAbsoluteFilePath' })
 class MatchConstraint implements ValidatorConstraintInterface {
-  validate(value: any, args: ValidationArguments) {
-    const [relatedPropertyName] = args.constraints;
-    const relatedValue = (args.object as any)[relatedPropertyName];
-    return value === relatedValue;
+  validate(value: any) {
+    return (
+      isString(value) && /^(\/[a-z.\-_]*[a-z\-_]+[a-z.\-_]*)+$/i.test(value)
+    );
   }
 
   defaultMessage(args: ValidationArguments): string {
-    const [relatedPropertyName, propertyName] = args.constraints;
-    return `'${propertyName}' is not equal to '${relatedPropertyName}'`;
+    return `'${args.property}' is not an absolute file path`;
   }
 }

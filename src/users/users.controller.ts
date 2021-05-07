@@ -11,12 +11,16 @@ import {
 import { AuthUser } from 'src/auth/decorators/auth-user.decorator';
 import { JwtAuthGuard } from 'src/auth/guards/jwt-auth.guard';
 import { User } from 'src/schemas/user.schema';
+import { StrategiesService } from 'src/strategies/strategies.service';
 import { CreateUserDTO } from './dto/create-user.dto';
 import { UsersService } from './users.service';
 
 @Controller('users')
 export class UsersController {
-  constructor(private usersService: UsersService) {}
+  constructor(
+    private usersService: UsersService,
+    private strategiesService: StrategiesService,
+  ) {}
 
   @Post()
   async createUser(@Body() body: CreateUserDTO) {
@@ -40,12 +44,38 @@ export class UsersController {
 
   @Get(':username')
   async findByUsername(@Param('username') username: string) {
-    const user = await this.usersService.findByUsername(username);
+    const user = await this.usersService.getUserByUsername(username);
 
     if (!user) {
       throw new NotFoundException("This user doesn't exists");
     }
 
     return user;
+  }
+
+  @UseGuards(JwtAuthGuard)
+  @Get('me/strategies')
+  async getCurrentUserStrategies(@AuthUser() user: User) {
+    const strategies = await this.strategiesService.getByUserId(user._id);
+
+    return strategies.map((strategy) =>
+      strategy.toObject({ versionKey: false }),
+    );
+  }
+
+  @UseGuards(JwtAuthGuard)
+  @Get(':username/strategies')
+  async getUserStrategies(@Param('username') username: string) {
+    const user = await this.usersService.getUserByUsername(username);
+
+    if (!user) {
+      throw new NotFoundException("This user doesn't exists");
+    }
+
+    const strategies = await this.strategiesService.getByUserId(user._id);
+
+    return strategies.map((strategy) =>
+      strategy.toObject({ versionKey: false }),
+    );
   }
 }

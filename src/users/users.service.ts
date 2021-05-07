@@ -1,25 +1,23 @@
 import { Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
-import { Model } from 'mongoose';
-import { User, UserDocument } from 'src/schemas/user.schema';
 import * as bcrypt from 'bcrypt';
+import { Model, Types as MongooseTypes } from 'mongoose';
+import { User, UserDocument } from 'src/schemas/user.schema';
 
 @Injectable()
 export class UsersService {
   constructor(@InjectModel(User.name) private userModel: Model<UserDocument>) {}
 
-  async findById(id: string) {
-    return await this.userModel
-      .findOne({ _id: id })
-      .select(['email', 'username', 'created_date']);
+  getUserById(id: string | MongooseTypes.ObjectId) {
+    return this.userModel.findOne({ _id: id }).select({ password: 0 });
   }
 
-  async findByUsername(username: string) {
-    return await this.userModel.findOne({ username });
+  getUserByUsername(username: string) {
+    return this.userModel.findOne({ username }).select({ password: 0 });
   }
 
-  async findByEmail(email: string) {
-    return await this.userModel.findOne({ email });
+  getUserByEmail(email: string) {
+    return this.userModel.findOne({ email });
   }
 
   async isEmailTaken(email: string) {
