@@ -8,7 +8,7 @@ import { User } from './user.schema';
 
 @Schema()
 export class SourceFiles {
-  @Prop({ required: true, unique: true })
+  @Prop({ required: true })
   path: string;
 
   @Prop({ required: true })

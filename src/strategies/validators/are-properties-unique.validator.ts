@@ -5,14 +5,15 @@ import {
   ValidatorConstraint,
   ValidatorConstraintInterface,
 } from 'class-validator';
+import _ from 'lodash';
 
-export function IsEqualTo(
+export function ArePropertiesUnique(
   property: string,
   validationOptions?: ValidationOptions,
 ): PropertyDecorator {
   return (object, propertyName) => {
     registerDecorator({
-      name: 'isEqualTo',
+      name: 'arePropertiesUnique',
       target: object.constructor,
       propertyName: propertyName.toString(),
       options: validationOptions,
@@ -22,17 +23,19 @@ export function IsEqualTo(
   };
 }
 
-@ValidatorConstraint({ name: 'IsEqualTo' })
+@ValidatorConstraint({ name: 'ArePropertiesUnique' })
 class MatchConstraint implements ValidatorConstraintInterface {
   validate(value: any, args: ValidationArguments) {
-    const [relatedPropertyName] = args.constraints;
-    const relatedValue = args.object[relatedPropertyName];
+    if (!Array.isArray(value) || !value.every(_.isObject)) {
+      return false;
+    }
 
-    return value === relatedValue;
+    const [propertyName] = args.constraints;
+
+    return _.uniqBy(value, propertyName).length === value.length;
   }
 
   defaultMessage(args: ValidationArguments): string {
-    const [relatedPropertyName] = args.constraints;
-    return `'${args.property}' is not equal to '${relatedPropertyName}'`;
+    return `Properties '${args.constraints[0]}' in '${args.property}' are not all unique`;
   }
 }

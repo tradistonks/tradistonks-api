@@ -9,6 +9,7 @@ import {
   MinLength,
   ValidateNested,
 } from 'class-validator';
+import { ArePropertiesUnique } from '../validators/are-properties-unique.validator';
 import { IsAbsoluteFilePath } from '../validators/is-absolute-file-path.validator';
 
 export class UpdateStrategyBodyFilesDTO {
@@ -38,6 +39,7 @@ export class UpdateStrategyBodyDTO {
   @IsArray()
   @ArrayMinSize(1)
   @ArrayMaxSize(64)
+  @ArePropertiesUnique('path')
   @ValidateNested({ each: true })
   @Type(() => UpdateStrategyBodyFilesDTO)
   files?: UpdateStrategyBodyFilesDTO[];
