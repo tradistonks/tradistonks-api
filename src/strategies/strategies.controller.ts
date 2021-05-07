@@ -1,6 +1,7 @@
 import {
   Body,
   Controller,
+  ForbiddenException,
   Get,
   NotFoundException,
   Param,
@@ -8,6 +9,7 @@ import {
   Put,
   UseGuards,
 } from '@nestjs/common';
+import { Types as MongooseTypes } from 'mongoose';
 import { AuthUser } from 'src/auth/decorators/auth-user.decorator';
 import { JwtAuthGuard } from 'src/auth/guards/jwt-auth.guard';
 import { User } from 'src/schemas/user.schema';
@@ -37,13 +39,20 @@ export class StrategiesController {
 
   @UseGuards(JwtAuthGuard)
   @Get(':strategy_id')
-  async getStrategy(@Param() params: GetStrategyParamsDTO) {
+  async getStrategy(
+    @AuthUser() user: User,
+    @Param() params: GetStrategyParamsDTO,
+  ) {
     const strategy = await this.strategiesService.getStrategyById(
       params.strategy_id,
     );
 
     if (!strategy) {
       throw new NotFoundException("This strategy doesn't exists");
+    }
+
+    if (!user._id.equals(strategy.user as MongooseTypes.ObjectId)) {
+      throw new ForbiddenException("You don't have access to this strategy");
     }
 
     return strategy.toObject();
@@ -56,15 +65,23 @@ export class StrategiesController {
     @Param() params: UpdateStrategyParamsDTO,
     @Body() body: UpdateStrategyBodyDTO,
   ) {
-    const strategy = await this.strategiesService.updateStrategy(
+    const strategy = await this.strategiesService.getStrategyById(
       params.strategy_id,
-      body,
     );
 
     if (!strategy) {
       throw new NotFoundException("This strategy doesn't exists");
     }
 
-    return strategy.toObject();
+    if (!user._id.equals(strategy.user as MongooseTypes.ObjectId)) {
+      throw new ForbiddenException("You don't have access to this strategy");
+    }
+
+    const updatedStrategy = await this.strategiesService.updateStrategy(
+      params.strategy_id,
+      body,
+    );
+
+    return updatedStrategy.toObject();
   }
 }
