@@ -109,7 +109,7 @@ export class StrategiesController {
     }
 
     return await this.runnerService.run({
-      files: strategy.revisions[strategy.revisions.length - 1].files,
+      files: strategy.files,
       compileScript: '/usr/local/gcc-11.1.0/bin/gcc src/main.c -o out',
       runScript: './out',
     });

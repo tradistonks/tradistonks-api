@@ -25,13 +25,7 @@ export class StrategiesService {
   ) {
     return await this.strategyModel.create({
       user: userId,
-      name: data.name,
-      language: data.language,
-      revisions: [
-        {
-          files: data.files,
-        },
-      ],
+      ...data,
     });
   }
 
@@ -45,20 +39,8 @@ export class StrategiesService {
       return null;
     }
 
-    if (data.name) {
-      strategy.name = data.name;
-    }
+    strategy.updated_date = new Date();
 
-    if (data.language) {
-      strategy.language = data.language;
-    }
-
-    if (data.files) {
-      strategy.revisions.push({
-        files: data.files,
-      });
-    }
-
-    return await strategy.save();
+    return await strategy.set(data).save();
   }
 }

@@ -17,19 +17,6 @@ export class SourceFiles {
 
 export const SourceFilesSchema = SchemaFactory.createForClass(SourceFiles);
 
-@Schema()
-export class StrategyRevision {
-  @Prop({ type: [SourceFilesSchema], required: true })
-  files: SourceFiles[];
-
-  @Prop({ default: Date.now })
-  created_date?: Date;
-}
-
-export const StrategyRevisionSchema = SchemaFactory.createForClass(
-  StrategyRevision,
-);
-
 export type StrategyDocument = Strategy & Document;
 
 @Schema()
@@ -45,8 +32,14 @@ export class Strategy {
   @Prop({ required: true })
   language: string;
 
-  @Prop({ type: [StrategyRevisionSchema], required: true })
-  revisions: StrategyRevision[];
+  @Prop({ type: [SourceFilesSchema], required: true })
+  files: SourceFiles[];
+
+  @Prop({ default: Date.now })
+  updated_date?: Date;
+
+  @Prop({ default: Date.now })
+  created_date?: Date;
 }
 
 export const StrategySchema = SchemaFactory.createForClass(Strategy);
