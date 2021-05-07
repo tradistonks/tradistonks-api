@@ -4,6 +4,7 @@ import {
   Schema as MongooseSchema,
   Types as MongooseTypes,
 } from 'mongoose';
+import { Language } from './language.schema';
 import { User } from './user.schema';
 
 @Schema()
@@ -29,8 +30,12 @@ export class Strategy {
   @Prop({ required: true })
   name: string;
 
-  @Prop({ required: true })
-  language: string;
+  @Prop({
+    type: MongooseSchema.Types.ObjectId,
+    ref: Language.name,
+    required: true,
+  })
+  language: MongooseTypes.ObjectId | Language;
 
   @Prop({ type: [SourceFilesSchema], required: true })
   files: SourceFiles[];

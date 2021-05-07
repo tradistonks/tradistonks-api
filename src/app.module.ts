@@ -5,6 +5,7 @@ import { UsersModule } from './users/users.module';
 import { StrategiesModule } from './strategies/strategies.module';
 import { SchemasModule } from './schemas/schemas.module';
 import { RunnerModule } from './runner/runner.module';
+import { LanguagesModule } from './languages/languages.module';
 
 @Module({
   imports: [
@@ -16,6 +17,7 @@ import { RunnerModule } from './runner/runner.module';
     StrategiesModule,
     SchemasModule,
     RunnerModule,
+    LanguagesModule,
   ],
   controllers: [],
   providers: [],
