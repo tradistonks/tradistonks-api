@@ -17,7 +17,7 @@ export class User {
   password: string;
 
   @Prop({ default: Date.now })
-  created_date?: Date;
+  created_date: Date;
 }
 
 export const UserSchema = SchemaFactory.createForClass(User);

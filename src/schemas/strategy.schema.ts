@@ -25,7 +25,7 @@ export class Strategy {
   _id: MongooseTypes.ObjectId;
 
   @Prop({ type: MongooseSchema.Types.ObjectId, ref: User.name, required: true })
-  user: MongooseTypes.ObjectId | User;
+  user: MongooseTypes.ObjectId;
 
   @Prop({ required: true })
   name: string;
@@ -35,16 +35,16 @@ export class Strategy {
     ref: Language.name,
     required: true,
   })
-  language: MongooseTypes.ObjectId | Language;
+  language: MongooseTypes.ObjectId;
 
   @Prop({ type: [SourceFilesSchema], required: true })
   files: SourceFiles[];
 
   @Prop({ default: Date.now })
-  updated_date?: Date;
+  updated_date: Date;
 
   @Prop({ default: Date.now })
-  created_date?: Date;
+  created_date: Date;
 }
 
 export const StrategySchema = SchemaFactory.createForClass(Strategy);

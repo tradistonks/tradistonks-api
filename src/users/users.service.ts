@@ -28,7 +28,7 @@ export class UsersService {
     return await this.userModel.exists({ username });
   }
 
-  async createUser(data: Omit<User, '_id'>) {
+  async createUser(data: Omit<User, '_id' | 'created_date' | 'updated_date'>) {
     return await this.userModel.create({
       ...data,
       password: await bcrypt.hash(data.password, 10),

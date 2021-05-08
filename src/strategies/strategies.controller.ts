@@ -15,13 +15,18 @@ import { AuthUser } from 'src/auth/decorators/auth-user.decorator';
 import { JwtAuthGuard } from 'src/auth/guards/jwt-auth.guard';
 import { LanguagesService } from 'src/languages/languages.service';
 import { RunnerService } from 'src/runner/runner.service';
+import { objectIdsToStrings } from 'src/schemas/utils/object-ids-to-strings.interface';
 import { User } from 'src/schemas/user.schema';
 import { CreateStrategyBodyDTO } from './dto/create-strategy-body.dto';
 import { GetStrategyParamsDTO } from './dto/get-strategy-params.dto';
+import { GetStrategyResponseDTO } from './dto/get-strategy-response.dto';
 import { RunStrategyParamsDTO } from './dto/run-strategy-params.dto';
 import { UpdateStrategyBodyDTO } from './dto/update-strategy-body.dto';
 import { UpdateStrategyParamsDTO } from './dto/update-strategy-params.dto';
 import { StrategiesService } from './strategies.service';
+import { UpdateStrategyResponseDTO } from './dto/update-strategy-response.dto';
+import { CreateStrategyResponseDTO } from './dto/create-strategy-response.dto';
+import { RunStrategyResponseDTO } from './dto/run-strategy-response.dto';
 
 @ApiTags('Strategies')
 @Controller('strategies')
@@ -38,13 +43,13 @@ export class StrategiesController {
   async createStrategy(
     @AuthUser() user: User,
     @Body() body: CreateStrategyBodyDTO,
-  ) {
+  ): Promise<CreateStrategyResponseDTO> {
     const strategy = await this.strategiesService.createStrategy(
       user._id,
       body,
     );
 
-    return strategy.toObject();
+    return objectIdsToStrings(strategy.toObject({ versionKey: false }));
   }
 
   @ApiBearerAuth()
@@ -53,7 +58,7 @@ export class StrategiesController {
   async getStrategy(
     @AuthUser() user: User,
     @Param() params: GetStrategyParamsDTO,
-  ) {
+  ): Promise<GetStrategyResponseDTO> {
     const strategy = await this.strategiesService.getStrategyById(
       params.strategy_id,
     );
@@ -66,7 +71,7 @@ export class StrategiesController {
       throw new ForbiddenException("You don't have access to this strategy");
     }
 
-    return strategy.toObject();
+    return objectIdsToStrings(strategy.toObject({ versionKey: false }));
   }
 
   @ApiBearerAuth()
@@ -76,7 +81,7 @@ export class StrategiesController {
     @AuthUser() user: User,
     @Param() params: UpdateStrategyParamsDTO,
     @Body() body: UpdateStrategyBodyDTO,
-  ) {
+  ): Promise<UpdateStrategyResponseDTO> {
     const strategy = await this.strategiesService.getStrategyById(
       params.strategy_id,
     );
@@ -94,7 +99,7 @@ export class StrategiesController {
       body,
     );
 
-    return updatedStrategy.toObject();
+    return objectIdsToStrings(updatedStrategy.toObject({ versionKey: false }));
   }
 
   @ApiBearerAuth()
@@ -103,7 +108,7 @@ export class StrategiesController {
   async runStrategy(
     @AuthUser() user: User,
     @Param() params: RunStrategyParamsDTO,
-  ) {
+  ): Promise<RunStrategyResponseDTO> {
     const strategy = await this.strategiesService
       .getStrategyById(params.strategy_id)
       .lean();
