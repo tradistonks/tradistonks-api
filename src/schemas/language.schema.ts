@@ -6,7 +6,7 @@ export type LanguageDocument = Language & Document;
 
 @Schema()
 export class Language {
-  _id?: MongooseTypes.ObjectId;
+  _id: MongooseTypes.ObjectId;
 
   @Prop({ required: true })
   name: string;

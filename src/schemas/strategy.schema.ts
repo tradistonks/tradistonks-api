@@ -22,7 +22,7 @@ export type StrategyDocument = Strategy & Document;
 
 @Schema()
 export class Strategy {
-  _id?: MongooseTypes.ObjectId;
+  _id: MongooseTypes.ObjectId;
 
   @Prop({ type: MongooseSchema.Types.ObjectId, ref: User.name, required: true })
   user: MongooseTypes.ObjectId | User;
