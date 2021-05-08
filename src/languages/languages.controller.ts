@@ -11,9 +11,13 @@ import {
 import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
 import { JwtAuthGuard } from 'src/auth/guards/jwt-auth.guard';
 import { CreateLanguageBodyDTO } from './dto/create-language-body.dto';
+import { CreateLanguageResponseDTO } from './dto/create-language-response.dto';
 import { GetLanguageParamsDTO } from './dto/get-language-params.dto';
+import { GetLanguageResponseDTO } from './dto/get-language-response.dto';
+import { GetLanguagesResponseDTO } from './dto/get-languages-response.dto';
 import { UpdateLanguageBodyDTO } from './dto/update-language-body.dto';
 import { UpdateLanguageParamsDTO } from './dto/update-language-params.dto';
+import { UpdateLanguageResponseDTO } from './dto/update-language-response.dto';
 import { LanguagesService } from './languages.service';
 
 @ApiTags('Languages')
@@ -22,14 +26,21 @@ export class LanguagesController {
   constructor(private languagesService: LanguagesService) {}
 
   @Get()
-  async getLanguages() {
-    return await this.languagesService.getLanguages().select(['_id', 'name']);
+  async getLanguages(): Promise<GetLanguagesResponseDTO> {
+    const languages = await this.languagesService
+      .getLanguages()
+      .select(['_id', 'name'])
+      .lean();
+
+    return languages;
   }
 
   @ApiBearerAuth()
   @UseGuards(JwtAuthGuard)
   @Post()
-  async createLanguage(@Body() body: CreateLanguageBodyDTO) {
+  async createLanguage(
+    @Body() body: CreateLanguageBodyDTO,
+  ): Promise<CreateLanguageResponseDTO> {
     const language = await this.languagesService.createLanguage(body);
 
     return language.toObject({ versionKey: false });
@@ -41,7 +52,7 @@ export class LanguagesController {
   async updateLanguage(
     @Param() params: UpdateLanguageParamsDTO,
     @Body() body: UpdateLanguageBodyDTO,
-  ) {
+  ): Promise<UpdateLanguageResponseDTO> {
     const language = await this.languagesService.updateLanguage(
       params.language_id,
       body,
@@ -57,7 +68,9 @@ export class LanguagesController {
   @ApiBearerAuth()
   @UseGuards(JwtAuthGuard)
   @Get(':language_id')
-  async getLanguage(@Param() params: GetLanguageParamsDTO) {
+  async getLanguage(
+    @Param() params: GetLanguageParamsDTO,
+  ): Promise<GetLanguageResponseDTO> {
     const language = await this.languagesService.getLanguageById(
       params.language_id,
     );

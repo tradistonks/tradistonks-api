@@ -28,21 +28,21 @@ export class UpdateLanguageBodyDTO {
   @IsString()
   @MinLength(1)
   @MaxLength(320)
-  name: string;
+  name?: string;
 
   @IsOptional()
   @IsString()
-  monaco_identifier: string;
-
-  @IsOptional()
-  @IsString()
-  @MaxLength(512 * 1024)
-  compile_script: string;
+  monaco_identifier?: string;
 
   @IsOptional()
   @IsString()
   @MaxLength(512 * 1024)
-  run_script: string;
+  compile_script?: string;
+
+  @IsOptional()
+  @IsString()
+  @MaxLength(512 * 1024)
+  run_script?: string;
 
   @IsOptional()
   @IsArray()
@@ -50,5 +50,5 @@ export class UpdateLanguageBodyDTO {
   @ArePropertiesUnique('path')
   @ValidateNested({ each: true })
   @Type(() => UpdateLanguageBodyFilesDTO)
-  files: UpdateLanguageBodyFilesDTO[];
+  files?: UpdateLanguageBodyFilesDTO[];
 }
