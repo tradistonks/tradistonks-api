@@ -8,6 +8,7 @@ import {
   Post,
   UseGuards,
 } from '@nestjs/common';
+import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
 import { AuthUser } from 'src/auth/decorators/auth-user.decorator';
 import { JwtAuthGuard } from 'src/auth/guards/jwt-auth.guard';
 import { User } from 'src/schemas/user.schema';
@@ -15,6 +16,7 @@ import { StrategiesService } from 'src/strategies/strategies.service';
 import { CreateUserDTO } from './dto/create-user.dto';
 import { UsersService } from './users.service';
 
+@ApiTags('Users')
 @Controller('users')
 export class UsersController {
   constructor(
@@ -38,6 +40,7 @@ export class UsersController {
     return user.toObject({ versionKey: false });
   }
 
+  @ApiBearerAuth()
   @UseGuards(JwtAuthGuard)
   @Get('me')
   async getCurrentUser(@AuthUser() user: User) {
@@ -55,6 +58,7 @@ export class UsersController {
     return user;
   }
 
+  @ApiBearerAuth()
   @UseGuards(JwtAuthGuard)
   @Get('me/strategies')
   async getCurrentUserStrategies(@AuthUser() user: User) {
@@ -65,6 +69,7 @@ export class UsersController {
     );
   }
 
+  @ApiBearerAuth()
   @UseGuards(JwtAuthGuard)
   @Get(':username/strategies')
   async getUserStrategies(@Param('username') username: string) {
