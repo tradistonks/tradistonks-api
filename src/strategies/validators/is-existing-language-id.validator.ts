@@ -1,7 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import {
   isMongoId,
-  isString,
   registerDecorator,
   ValidationArguments,
   ValidationOptions,
