@@ -1,5 +1,6 @@
 import { Module } from '@nestjs/common';
 import { LanguagesModule } from 'src/languages/languages.module';
+import { QualityModule } from 'src/quality/quality.module';
 import { RunnerModule } from 'src/runner/runner.module';
 import { SchemasModule } from 'src/schemas/schemas.module';
 import { StrategiesController } from './strategies.controller';
@@ -10,6 +11,6 @@ import { IsExistingLanguageIdConstraint } from './validators/is-existing-languag
   controllers: [StrategiesController],
   providers: [StrategiesService, IsExistingLanguageIdConstraint],
   exports: [StrategiesService],
-  imports: [SchemasModule, LanguagesModule, RunnerModule],
+  imports: [SchemasModule, LanguagesModule, RunnerModule, QualityModule],
 })
 export class StrategiesModule {}

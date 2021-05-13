@@ -38,3 +38,11 @@ lerna-debug.log*
 
 # Environment file
 .env
+
+# ANTLR4
+.antlr
+*.class
+*.java
+*.interp
+*.tokens
+*.log

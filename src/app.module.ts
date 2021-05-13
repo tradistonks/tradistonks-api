@@ -6,6 +6,7 @@ import { StrategiesModule } from './strategies/strategies.module';
 import { SchemasModule } from './schemas/schemas.module';
 import { RunnerModule } from './runner/runner.module';
 import { LanguagesModule } from './languages/languages.module';
+import { QualityModule } from './quality/quality.module';
 
 @Module({
   imports: [
@@ -18,6 +19,7 @@ import { LanguagesModule } from './languages/languages.module';
     SchemasModule,
     RunnerModule,
     LanguagesModule,
+    QualityModule,
   ],
   controllers: [],
   providers: [],
