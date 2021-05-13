@@ -21,7 +21,7 @@ import { VocabularyImpl } from 'antlr4ts/VocabularyImpl';
 import * as Utils from 'antlr4ts/misc/Utils';
 
 import { GoParserVisitor } from './GoParserVisitor';
-import { GoParserBase } from '../GoParserBase';
+import { GoParserBase } from '../go-parser-base';
 
 export class GoParser extends GoParserBase {
   public static readonly BREAK = 1;

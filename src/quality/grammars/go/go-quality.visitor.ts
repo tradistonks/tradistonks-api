@@ -1,14 +1,13 @@
 import { CharStreams, CommonTokenStream } from 'antlr4ts';
-import { AbstractParseTreeVisitor } from 'antlr4ts/tree/AbstractParseTreeVisitor';
-import { GrammarVisitor } from 'src/quality/interfaces/grammar-visitor.interface';
+import { QualityGrammarVisitor } from 'src/quality/interfaces/quality-grammar-visitor.abstract';
 import { Quality } from 'src/quality/interfaces/quality.interface';
 import { GoLexer } from './runtime/GoLexer';
 import { FunctionDeclContext, GoParser } from './runtime/GoParser';
 import { GoParserVisitor } from './runtime/GoParserVisitor';
 
-export class GoVisitor
-  extends AbstractParseTreeVisitor<void>
-  implements GoParserVisitor<void>, GrammarVisitor {
+export class GoQualityVisitor
+  extends QualityGrammarVisitor
+  implements GoParserVisitor<void> {
   private quality: Quality;
 
   run(source: string): Quality {
