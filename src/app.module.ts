@@ -7,6 +7,7 @@ import { SchemasModule } from './schemas/schemas.module';
 import { RunnerModule } from './runner/runner.module';
 import { LanguagesModule } from './languages/languages.module';
 import { QualityModule } from './quality/quality.module';
+import { RefreshTokensModule } from './refresh-tokens/refresh-tokens.module';
 
 @Module({
   imports: [
@@ -20,6 +21,7 @@ import { QualityModule } from './quality/quality.module';
     RunnerModule,
     LanguagesModule,
     QualityModule,
+    RefreshTokensModule,
   ],
   controllers: [],
   providers: [],

@@ -1,9 +1,11 @@
-import { Body, Controller, Post, UseGuards } from '@nestjs/common';
+import { Body, Controller, Post, Res, UseGuards } from '@nestjs/common';
 import { ApiTags } from '@nestjs/swagger';
+import { Response } from 'express';
 import { User } from 'src/schemas/user.schema';
 import { AuthService } from './auth.service';
 import { AuthUser } from './decorators/auth-user.decorator';
 import { LoginBodyDTO } from './dto/login-body.dto';
+import { RefreshBodyDTO } from './dto/refersh-body.dto';
 import { LocalAuthGuard } from './guards/local-auth.guard';
 
 @ApiTags('Authentication')
@@ -14,7 +16,32 @@ export class AuthController {
   @UseGuards(LocalAuthGuard)
   @Post('login')
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  async login(@AuthUser() user: User, @Body() _body: LoginBodyDTO) {
-    return this.authService.login(user);
+  async login(
+    @Res({ passthrough: true }) res: Response,
+    @AuthUser() user: User,
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    @Body() _body: LoginBodyDTO,
+  ) {
+    const accessToken = await this.authService.generateAccessToken(user);
+    const refreshToken = await this.authService.generateRefreshToken(user);
+
+    res.cookie('refresh-token', refreshToken);
+
+    return {
+      access_token: accessToken,
+    };
+  }
+
+  @Post('refresh')
+  async refresh(@Body() body: RefreshBodyDTO) {
+    const {
+      token,
+    } = await this.authService.generateAccessTokenFromRefreshToken(
+      body.refresh_token,
+    );
+
+    return {
+      access_token: token,
+    };
   }
 }
