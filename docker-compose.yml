@@ -3,6 +3,8 @@ version: "3.4"
 networks:
   mongodb-network:
   godbox-network:
+  tradistonks-api:
+    name: tradistonks-api
 
 services:
   tradistonks-api:
@@ -14,6 +16,7 @@ services:
     networks:
       - mongodb-network
       - godbox-network
+      - tradistonks-api
     ports:
       - 3000:3000
     env_file: .env
