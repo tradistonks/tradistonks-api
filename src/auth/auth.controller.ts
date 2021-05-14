@@ -5,7 +5,7 @@ import { User } from 'src/schemas/user.schema';
 import { AuthService } from './auth.service';
 import { AuthUser } from './decorators/auth-user.decorator';
 import { LoginBodyDTO } from './dto/login-body.dto';
-import { RefreshBodyDTO } from './dto/refersh-body.dto';
+import { RefreshBodyDTO } from './dto/refresh-body.dto';
 import { LocalAuthGuard } from './guards/local-auth.guard';
 
 @ApiTags('Authentication')
