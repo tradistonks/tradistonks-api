@@ -3,6 +3,12 @@ import { PassportStrategy } from '@nestjs/passport';
 import { Injectable } from '@nestjs/common';
 import { UsersService } from 'src/users/users.service';
 
+export interface JwtStrategyPayload {
+  iat: number;
+  exp: number;
+  sub: string;
+}
+
 @Injectable()
 export class JwtStrategy extends PassportStrategy(Strategy) {
   constructor(private usersService: UsersService) {
@@ -14,8 +20,7 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
     });
   }
 
-  async validate(payload: any) {
-    console.log(payload);
+  async validate(payload: JwtStrategyPayload) {
     const userId = payload.sub;
     return await this.usersService.getUserById(userId);
   }
