@@ -9,7 +9,7 @@ import {
   UseGuards,
 } from '@nestjs/common';
 import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
-import { JwtAuthGuard } from 'src/auth/guards/jwt-auth.guard';
+import { AuthGuard } from 'src/auth/guards/auth.guard';
 import { CreateLanguageBodyDTO } from './dto/create-language-body.dto';
 import { CreateLanguageResponseDTO } from './dto/create-language-response.dto';
 import { GetLanguageParamsDTO } from './dto/get-language-params.dto';
@@ -25,6 +25,7 @@ import { LanguagesService } from './languages.service';
 export class LanguagesController {
   constructor(private languagesService: LanguagesService) {}
 
+  @UseGuards(AuthGuard)
   @Get()
   async getLanguages(): Promise<GetLanguagesResponseDTO> {
     const languages = await this.languagesService
@@ -36,7 +37,7 @@ export class LanguagesController {
   }
 
   @ApiBearerAuth()
-  @UseGuards(JwtAuthGuard)
+  @UseGuards(AuthGuard)
   @Post()
   async createLanguage(
     @Body() body: CreateLanguageBodyDTO,
@@ -47,7 +48,7 @@ export class LanguagesController {
   }
 
   @ApiBearerAuth()
-  @UseGuards(JwtAuthGuard)
+  @UseGuards(AuthGuard)
   @Put(':language_id')
   async updateLanguage(
     @Param() params: UpdateLanguageParamsDTO,
@@ -66,7 +67,7 @@ export class LanguagesController {
   }
 
   @ApiBearerAuth()
-  @UseGuards(JwtAuthGuard)
+  @UseGuards(AuthGuard)
   @Get(':language_id')
   async getLanguage(
     @Param() params: GetLanguageParamsDTO,

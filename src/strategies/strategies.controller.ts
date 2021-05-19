@@ -12,7 +12,7 @@ import {
 import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
 import { Types as MongooseTypes } from 'mongoose';
 import { AuthUser } from 'src/auth/decorators/auth-user.decorator';
-import { JwtAuthGuard } from 'src/auth/guards/jwt-auth.guard';
+import { AuthGuard } from 'src/auth/guards/auth.guard';
 import { LanguagesService } from 'src/languages/languages.service';
 import { QualityService } from 'src/quality/quality.service';
 import { RunnerService } from 'src/runner/runner.service';
@@ -42,7 +42,7 @@ export class StrategiesController {
   ) {}
 
   @ApiBearerAuth()
-  @UseGuards(JwtAuthGuard)
+  @UseGuards(AuthGuard)
   @Post()
   async createStrategy(
     @AuthUser() user: User,
@@ -57,7 +57,7 @@ export class StrategiesController {
   }
 
   @ApiBearerAuth()
-  @UseGuards(JwtAuthGuard)
+  @UseGuards(AuthGuard)
   @Get(':strategy_id')
   async getStrategy(
     @AuthUser() user: User,
@@ -79,7 +79,7 @@ export class StrategiesController {
   }
 
   @ApiBearerAuth()
-  @UseGuards(JwtAuthGuard)
+  @UseGuards(AuthGuard)
   @Put(':strategy_id')
   async updateStrategy(
     @AuthUser() user: User,
@@ -107,7 +107,7 @@ export class StrategiesController {
   }
 
   @ApiBearerAuth()
-  @UseGuards(JwtAuthGuard)
+  @UseGuards(AuthGuard)
   @Post(':strategy_id/run')
   async runStrategy(
     @AuthUser() user: User,
@@ -143,7 +143,7 @@ export class StrategiesController {
   }
 
   @ApiBearerAuth()
-  @UseGuards(JwtAuthGuard)
+  @UseGuards(AuthGuard)
   @Post(':strategy_id/quality')
   async strategyQuality(
     @AuthUser() user: User,

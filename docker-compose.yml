@@ -2,9 +2,17 @@ version: "3.4"
 
 networks:
   mongodb-network:
+  redis-network:
   godbox-network:
   tradistonks-api:
     name: tradistonks-api
+  hydra-network:
+
+volumes:
+  mongodb-data:
+  mongodb-logs:
+  redis-data:
+  hydra-postgres-data:
 
 services:
   tradistonks-api:
@@ -15,30 +23,96 @@ services:
       - ./src/:/usr/src/app/src/
     networks:
       - mongodb-network
+      - redis-network
       - godbox-network
       - tradistonks-api
+      - hydra-network
     ports:
       - 3000:3000
     env_file: .env
     environment:
       MONGODB_URL: ${MONGODB_URL}
       GODBOX_URL: ${GODBOX_URL}
-      JWT_SECRET: ${JWT_SECRET}
       CLIENT_EXTERNAL_HOST: ${CLIENT_EXTERNAL_HOST}
       CLIENT_INTERNAL_HOST: ${CLIENT_INTERNAL_HOST}
+      API_TRUST_PROXY: ${API_TRUST_PROXY}
+      SESSION_SECRET: ${SESSION_SECRET}
+      SESSION_COOKIE_NAME: ${SESSION_COOKIE_NAME}
+      SESSION_COOKIE_SECURE: ${SESSION_COOKIE_SECURE}
+      REDIS_HOST: ${REDIS_HOST}
+      REDIS_PORT: ${REDIS_PORT}
+      OAUTH2_SERVER_INTERNAL_HOST: ${OAUTH2_SERVER_INTERNAL_HOST}
+      OAUTH2_CLIENT_ID: ${OAUTH2_CLIENT_ID}
+      OAUTH2_CLIENT_SECRET: ${OAUTH2_CLIENT_SECRET}
+      HYDRA_ADMIN_URL: ${HYDRA_ADMIN_URL}
 
   mongodb:
     image: mongo:latest
     volumes:
-      - ./.docker/mongodb/data/db/:/data/db/
-      - ./.docker/mongodb/data/log/:/var/log/mongodb/
+      - mongodb-data:/data/db/
+      - mongodb-logs:/var/log/mongodb/
     networks:
       - mongodb-network
     ports:
       - 27018:27017
+
+  redis:
+    image: bitnami/redis:latest
+    volumes:
+      - redis-data:/bitnami/redis/data
+    networks:
+      - redis-network
+    environment:
+      ALLOW_EMPTY_PASSWORD: "yes"
 
   godbox:
     image: quantumsheep/godbox
     privileged: true
     networks:
       - godbox-network
+
+  hydra-postgres:
+    image: postgres:9.6
+    networks:
+      - hydra-network
+    volumes:
+      - hydra-postgres-data:/var/lib/postgresql/data
+    restart: always
+    env_file: .env
+    environment:
+      POSTGRES_DB: ${HYDRA_POSTGRES_DB}
+      POSTGRES_USER: ${HYDRA_POSTGRES_USER}
+      POSTGRES_PASSWORD: ${HYDRA_POSTGRES_PASSWORD}
+
+  hydra-migrate:
+    image: oryd/hydra:v1.10.2
+    command: migrate sql --yes ${HYDRA_DSN}
+    networks:
+      - hydra-network
+    env_file: .env
+    environment:
+      LOG_LEVEL: debug
+      SECRETS_SYSTEM: ${HYDRA_SECRETS_SYSTEM}
+    restart: on-failure
+
+  hydra:
+    image: oryd/hydra:v1.10.2
+    command: serve all --dangerous-force-http
+    ports:
+      - 4444:4444
+      - 4445:4445
+    depends_on:
+      - hydra-migrate
+    networks:
+      - hydra-network
+    env_file: .env
+    environment:
+      CORS_ENABLED: "true"
+      CORS_ALLOWED_METHODS: POST,GET,PUT,DELETE
+      LOG_LEVEL: debug
+      SECRETS_SYSTEM: ${HYDRA_SECRETS_SYSTEM}
+      DSN: ${HYDRA_DSN}
+      HYDRA_URLS_SELF_ISSUER: ${HYDRA_URLS_SELF_ISSUER}
+      URLS_CONSENT: ${CLIENT_EXTERNAL_HOST}/oauth2/consent
+      URLS_LOGIN: ${CLIENT_EXTERNAL_HOST}/oauth2/login
+    restart: on-failure
