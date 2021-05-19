@@ -1,6 +1,6 @@
 import { IsString } from 'class-validator';
 
-export class RefreshBodyDTO {
+export class ConsentBodyDTO {
   @IsString()
-  refresh_token: string;
+  consent_challenge: string;
 }

@@ -10,7 +10,7 @@ import {
 } from '@nestjs/common';
 import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
 import { AuthUser } from 'src/auth/decorators/auth-user.decorator';
-import { JwtAuthGuard } from 'src/auth/guards/jwt-auth.guard';
+import { AuthGuard } from 'src/auth/guards/auth.guard';
 import { User } from 'src/schemas/user.schema';
 import { StrategiesService } from 'src/strategies/strategies.service';
 import { CreateUserDTO } from './dto/create-user.dto';
@@ -41,7 +41,7 @@ export class UsersController {
   }
 
   @ApiBearerAuth()
-  @UseGuards(JwtAuthGuard)
+  @UseGuards(AuthGuard)
   @Get('me')
   async getCurrentUser(@AuthUser() user: User) {
     return user;
@@ -59,7 +59,7 @@ export class UsersController {
   }
 
   @ApiBearerAuth()
-  @UseGuards(JwtAuthGuard)
+  @UseGuards(AuthGuard)
   @Get('me/strategies')
   async getCurrentUserStrategies(@AuthUser() user: User) {
     const strategies = await this.strategiesService.getByUserId(user._id);
@@ -70,7 +70,7 @@ export class UsersController {
   }
 
   @ApiBearerAuth()
-  @UseGuards(JwtAuthGuard)
+  @UseGuards(AuthGuard)
   @Get(':username/strategies')
   async getUserStrategies(@Param('username') username: string) {
     const user = await this.usersService.getUserByUsername(username);

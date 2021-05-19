@@ -1,47 +1,70 @@
-import { Body, Controller, Post, Res, UseGuards } from '@nestjs/common';
+import {
+  Body,
+  Controller,
+  Query,
+  Post,
+  UnauthorizedException,
+  UseGuards,
+  Session,
+} from '@nestjs/common';
+import { AuthGuard } from '@nestjs/passport';
 import { ApiTags } from '@nestjs/swagger';
-import { Response } from 'express';
-import { User } from 'src/schemas/user.schema';
 import { AuthService } from './auth.service';
-import { AuthUser } from './decorators/auth-user.decorator';
+import { AuthCallbackData } from './decorators/auth-callback-data.decorator';
+import { CallbackDataDTO } from './dto/callback-data.dto';
+import { ConsentBodyDTO } from './dto/consent-body.dto';
+import { LocalCallbackQueriesDTO } from './dto/local-callback-queries.dto';
 import { LoginBodyDTO } from './dto/login-body.dto';
-import { RefreshBodyDTO } from './dto/refresh-body.dto';
-import { LocalAuthGuard } from './guards/local-auth.guard';
+import { SessionDTO } from '../session/dto/session.dto';
 
 @ApiTags('Authentication')
 @Controller('auth')
 export class AuthController {
   constructor(private authService: AuthService) {}
 
-  @UseGuards(LocalAuthGuard)
+  // @UseGuards(LocalAuthGuard)
   @Post('login')
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  async login(
-    @Res({ passthrough: true }) res: Response,
-    @AuthUser() user: User,
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    @Body() _body: LoginBodyDTO,
-  ) {
-    const accessToken = await this.authService.generateAccessToken(user);
-    const refreshToken = await this.authService.generateRefreshToken(user);
+  async login(@Body() body: LoginBodyDTO) {
+    const redirect_to = await this.authService.login(
+      body.login_challenge,
+      body.email,
+      body.password,
+    );
 
-    res.cookie('refresh-token', refreshToken);
+    if (!redirect_to) {
+      throw new UnauthorizedException('Invalid credentials');
+    }
 
     return {
-      access_token: accessToken,
+      redirect_to,
     };
   }
 
-  @Post('refresh')
-  async refresh(@Body() body: RefreshBodyDTO) {
-    const {
-      token,
-    } = await this.authService.generateAccessTokenFromRefreshToken(
-      body.refresh_token,
-    );
+  @Post('consent')
+  async consent(@Body() body: ConsentBodyDTO) {
+    const redirect_to = await this.authService.consent(body.consent_challenge);
+
+    if (!redirect_to) {
+      throw new UnauthorizedException('Invalid credentials');
+    }
 
     return {
-      access_token: token,
+      redirect_to,
     };
+  }
+
+  @UseGuards(AuthGuard('oauth2'))
+  @Post('callback/local')
+  async localCallback(
+    @AuthCallbackData() data: CallbackDataDTO,
+    @Session() session: SessionDTO,
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    @Query() _queries: LocalCallbackQueriesDTO,
+  ) {
+    session.userId = data.userId;
+    session.accessToken = data.accessToken;
+    session.refreshToken = data.refreshToken;
+
+    return { ok: true };
   }
 }

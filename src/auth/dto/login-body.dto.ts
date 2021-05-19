@@ -6,4 +6,7 @@ export class LoginBodyDTO {
 
   @IsString()
   password: string;
+
+  @IsString()
+  login_challenge: string;
 }
