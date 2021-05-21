@@ -1,20 +1,21 @@
 import { Injectable, NotImplementedException } from '@nestjs/common';
 
-import { QualityGrammarServiceConstructor } from './interfaces/quality-grammar-service.abstract';
+import { QualityGrammarVisitor } from './interfaces/quality-grammar.visitor';
 
-import { GoQualityGrammarService } from './grammars/go/go-quality-grammar.service';
+import { GoQualityGrammarVisitor } from './grammars/go/go-quality-grammar.visitor';
 
 @Injectable()
 export class QualityService {
   private static readonly LANGUAGES_MAP: Record<
     string,
-    QualityGrammarServiceConstructor
+    Constructor<QualityGrammarVisitor>
   > = {
-    go: GoQualityGrammarService,
+    go: GoQualityGrammarVisitor,
   };
 
   public run(source: string, language: string) {
-    const QualityGrammarService = QualityService.LANGUAGES_MAP[language.toLowerCase()];
+    const QualityGrammarService =
+      QualityService.LANGUAGES_MAP[language.toLowerCase()];
 
     if (!QualityGrammarService) {
       throw new NotImplementedException(

@@ -1,8 +1,7 @@
-import { Rule } from 'src/quality/interfaces/rule.abstract';
+import { Rule } from 'src/quality/interfaces/rule';
+
 import { GoParserVisitor } from '../runtime/GoParserVisitor';
 
-export abstract class GoRule extends Rule implements GoParserVisitor<string[]> {}
-
-export interface GoRuleImplem {
-  new(): GoRule;
+export interface GoRule extends Rule {
+  type: keyof GoParserVisitor<unknown>;
 }
