@@ -1,4 +1,8 @@
-import { BadRequestException, Injectable } from '@nestjs/common';
+import {
+  BadRequestException,
+  ForbiddenException,
+  Injectable,
+} from '@nestjs/common';
 import { AdminApi, Configuration } from '@oryd/hydra-client';
 import bcrypt from 'bcrypt';
 import { Types as MongooseTypes } from 'mongoose';
@@ -87,6 +91,11 @@ export class AuthService {
     const {
       data: introspectRequest,
     } = await this.hydraAdmin.introspectOAuth2Token(accessToken);
+
+    if (!introspectRequest.active) {
+      throw new ForbiddenException(`Invalid or expired access token`);
+    }
+
     return {
       subject: introspectRequest.sub,
       scopes: introspectRequest.scope.split(' '),

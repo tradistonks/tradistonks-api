@@ -20,10 +20,9 @@ export class AuthGuard implements CanActivate {
     try {
       const req = ctx.switchToHttp().getRequest<RequestWithSession>();
 
-      console.log(req.session);
       const accessToken =
         req.headers['authorization']?.split?.(' ')?.[1] ??
-        req.session.accessToken;
+        req.session.refreshToken;
 
       if (!accessToken) {
         return false;
@@ -37,7 +36,6 @@ export class AuthGuard implements CanActivate {
 
       return true;
     } catch (e) {
-      console.error(e);
       return false;
     }
   }
