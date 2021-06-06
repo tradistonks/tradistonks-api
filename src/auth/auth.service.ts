@@ -2,6 +2,7 @@ import {
   BadRequestException,
   ForbiddenException,
   Injectable,
+  OnModuleInit,
 } from '@nestjs/common';
 import { AdminApi, Configuration } from '@oryd/hydra-client';
 import bcrypt from 'bcrypt';
@@ -9,7 +10,7 @@ import { Types as MongooseTypes } from 'mongoose';
 import { UsersService } from '../users/users.service';
 
 @Injectable()
-export class AuthService {
+export class AuthService implements OnModuleInit {
   private hydraAdmin = new AdminApi(
     new Configuration({
       basePath: process.env.HYDRA_ADMIN_URL,
@@ -17,6 +18,21 @@ export class AuthService {
   );
 
   constructor(private usersService: UsersService) {}
+
+  onModuleInit() {
+    this.hydraAdmin.updateOAuth2Client(process.env.OAUTH2_CLIENT_ID, {
+      client_secret: process.env.OAUTH2_CLIENT_SECRET,
+      grant_types: [
+        'authorization_code',
+        'refresh_token',
+        'client_credentials',
+      ],
+      response_types: ['token', 'code'],
+      scope: 'offline identify',
+      redirect_uris: ['http://localhost:3080/oauth2/callback'],
+      token_endpoint_auth_method: 'client_secret_post',
+    });
+  }
 
   async login(loginChallenge: string, email: string, password: string) {
     try {
