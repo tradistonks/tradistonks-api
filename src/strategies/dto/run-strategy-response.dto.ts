@@ -1,4 +1,5 @@
 export class RunStrategyResponseDTOPhase {
+  name: string;
   status: number;
   stdout: string;
   stderr: string;
