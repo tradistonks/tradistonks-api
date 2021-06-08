@@ -12,7 +12,7 @@ export interface RunOptions {
 export interface RunResultPhase {
   status: number;
   stdout: string;
-  stdin: string;
+  stderr: string;
 }
 
 export interface RunResult {

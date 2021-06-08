@@ -1,7 +1,7 @@
 export class RunStrategyResponseDTOPhase {
   status: number;
   stdout: string;
-  stdin: string;
+  stderr: string;
 }
 
 export class RunStrategyResponseDTO {
