@@ -9,14 +9,14 @@ export interface RunOptions {
   runScript: string;
 }
 
-export interface RunResult {
-  compile_status: number;
-  compile_stdout: string;
-  compile_stderr: string;
+export interface RunResultPhase {
+  status: number;
+  stdout: string;
+  stdin: string;
+}
 
-  run_status: number;
-  run_stdout: string;
-  run_stderr: string;
+export interface RunResult {
+  phases: RunResultPhase[];
 }
 
 @Injectable()
@@ -39,8 +39,16 @@ export class RunnerService {
         url: `${process.env.GODBOX_URL}/run`,
         data: {
           files: filesBuffer,
-          compile_script: options.compileScript,
-          run_script: options.runScript,
+          phases: [
+            {
+              name: 'Compilation',
+              script: options.compileScript,
+            },
+            {
+              name: 'Execution',
+              script: options.runScript,
+            },
+          ],
         },
       });
 
