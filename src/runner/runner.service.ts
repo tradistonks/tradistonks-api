@@ -20,6 +20,23 @@ export interface RunResult {
   phases: RunResultPhase[];
 }
 
+export class RunnerFailedError extends Error {
+  status: number;
+
+  constructor(data: { status: number; message: string }) {
+    super(data?.message ?? 'The runner failed');
+
+    this.status = data?.status ?? -1;
+  }
+
+  toJson() {
+    return {
+      status: this.status,
+      message: this.message,
+    };
+  }
+}
+
 @Injectable()
 export class RunnerService {
   async run(options: RunOptions) {
@@ -55,7 +72,7 @@ export class RunnerService {
 
       return data;
     } catch (e) {
-      console.error(e);
+      throw new RunnerFailedError(e.response?.data);
     }
   }
 }

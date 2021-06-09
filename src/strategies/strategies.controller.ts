@@ -3,6 +3,8 @@ import {
   Controller,
   ForbiddenException,
   Get,
+  HttpException,
+  InternalServerErrorException,
   NotFoundException,
   Param,
   Post,
@@ -15,7 +17,7 @@ import { AuthUser } from 'src/auth/decorators/auth-user.decorator';
 import { AuthGuard } from 'src/auth/guards/auth.guard';
 import { LanguagesService } from 'src/languages/languages.service';
 import { QualityService } from 'src/quality/quality.service';
-import { RunnerService } from 'src/runner/runner.service';
+import { RunnerFailedError, RunnerService } from 'src/runner/runner.service';
 import { User } from 'src/schemas/user.schema';
 import { objectIdsToStrings } from 'src/schemas/utils/object-ids-to-strings.interface';
 import { CreateStrategyBodyDTO } from './dto/create-strategy-body.dto';
@@ -135,11 +137,20 @@ export class StrategiesController {
       );
     }
 
-    return await this.runnerService.run({
-      files: strategy.files,
-      compileScript: language.compile_script,
-      runScript: language.run_script,
-    });
+    try {
+      return await this.runnerService.run({
+        files: strategy.files,
+        compileScript: language.compile_script,
+        runScript: language.run_script,
+      });
+    } catch (e) {
+      if (e instanceof RunnerFailedError) {
+        throw new HttpException(e.toJson(), e.status);
+      }
+
+      console.error(e);
+      throw new InternalServerErrorException();
+    }
   }
 
   @ApiBearerAuth()
