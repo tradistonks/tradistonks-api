@@ -19,8 +19,8 @@ export class AuthService implements OnModuleInit {
 
   constructor(private usersService: UsersService) {}
 
-  onModuleInit() {
-    this.hydraAdmin.updateOAuth2Client(process.env.OAUTH2_CLIENT_ID, {
+  async onModuleInit() {
+    const clientConfiguration = {
       client_secret: process.env.OAUTH2_CLIENT_SECRET,
       grant_types: [
         'authorization_code',
@@ -31,7 +31,21 @@ export class AuthService implements OnModuleInit {
       scope: 'offline identify',
       redirect_uris: ['http://localhost:3080/oauth2/callback'],
       token_endpoint_auth_method: 'client_secret_post',
-    });
+    };
+
+    try {
+      await this.hydraAdmin.getOAuth2Client(process.env.OAUTH2_CLIENT_ID);
+
+      await this.hydraAdmin.updateOAuth2Client(process.env.OAUTH2_CLIENT_ID, {
+        client_secret: process.env.OAUTH2_CLIENT_SECRET,
+        ...clientConfiguration,
+      });
+    } catch (error) {
+      await this.hydraAdmin.createOAuth2Client({
+        client_id: process.env.OAUTH2_CLIENT_ID,
+        ...clientConfiguration,
+      });
+    }
   }
 
   async login(loginChallenge: string, email: string, password: string) {
