@@ -12,7 +12,7 @@ export class SourceFiles {
   @Prop({ required: true })
   path: string;
 
-  @Prop({ required: true })
+  @Prop({ default: '' })
   content: string;
 }
 
