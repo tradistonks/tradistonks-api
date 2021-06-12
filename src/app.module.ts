@@ -9,6 +9,7 @@ import { SchemasModule } from './schemas/schemas.module';
 import { SessionModule } from './session/session.module';
 import { StrategiesModule } from './strategies/strategies.module';
 import { UsersModule } from './users/users.module';
+import { StocksModule } from './stocks/stocks.module';
 
 @Module({
   imports: [
@@ -24,6 +25,7 @@ import { UsersModule } from './users/users.module';
     RunnerModule,
     LanguagesModule,
     QualityModule,
+    StocksModule,
   ],
   controllers: [],
   providers: [],
