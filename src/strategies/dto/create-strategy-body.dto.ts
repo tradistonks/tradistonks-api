@@ -24,6 +24,17 @@ export class CreateStrategyBodyFilesDTO {
   content: string;
 }
 
+export class CreateStrategyBodySymbolDTO {
+  @IsString()
+  name: string;
+
+  @IsString()
+  ticker: string;
+
+  @IsString()
+  type: string;
+}
+
 export class CreateStrategyBodyDTO {
   @IsString()
   @MinLength(1)
@@ -40,4 +51,10 @@ export class CreateStrategyBodyDTO {
   @ValidateNested({ each: true })
   @Type(() => CreateStrategyBodyFilesDTO)
   files: CreateStrategyBodyFilesDTO[];
+
+  @IsArray()
+  @ArrayMinSize(1)
+  @ValidateNested({ each: true })
+  @Type(() => CreateStrategyBodySymbolDTO)
+  symbols: CreateStrategyBodySymbolDTO[];
 }

@@ -18,6 +18,20 @@ export class SourceFiles {
 
 export const SourceFilesSchema = SchemaFactory.createForClass(SourceFiles);
 
+@Schema()
+export class StockSymbol {
+  @Prop({ required: true })
+  name: string;
+
+  @Prop({ required: true })
+  ticker: string;
+
+  @Prop({ default: '' })
+  type: string;
+}
+
+export const StockSymbolSchema = SchemaFactory.createForClass(StockSymbol);
+
 export type StrategyDocument = Strategy & Document;
 
 @Schema()
@@ -39,6 +53,9 @@ export class Strategy {
 
   @Prop({ type: [SourceFilesSchema], required: true })
   files: SourceFiles[];
+
+  @Prop({ type: [StockSymbolSchema], required: true })
+  symbols: StockSymbol[];
 
   @Prop({ default: Date.now })
   updated_date: Date;

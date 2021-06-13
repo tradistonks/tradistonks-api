@@ -25,6 +25,17 @@ export class UpdateStrategyBodyFilesDTO {
   content: string;
 }
 
+export class UpdateStrategyBodySymbolDTO {
+  @IsString()
+  name: string;
+
+  @IsString()
+  ticker: string;
+
+  @IsString()
+  type: string;
+}
+
 export class UpdateStrategyBodyDTO {
   @IsOptional()
   @IsString()
@@ -44,4 +55,11 @@ export class UpdateStrategyBodyDTO {
   @ValidateNested({ each: true })
   @Type(() => UpdateStrategyBodyFilesDTO)
   files?: UpdateStrategyBodyFilesDTO[];
+
+  @IsOptional()
+  @IsArray()
+  @ArrayMinSize(1)
+  @ValidateNested({ each: true })
+  @Type(() => UpdateStrategyBodySymbolDTO)
+  symbols?: UpdateStrategyBodySymbolDTO[];
 }

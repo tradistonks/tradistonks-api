@@ -4,6 +4,14 @@ export class CreateStrategyResponseFilesDTO {
   content: string;
 }
 
+export class CreateStrategyResponseSymbolDTO {
+  name: string;
+
+  ticker: string;
+
+  type: string;
+}
+
 export class CreateStrategyResponseDTO {
   _id: string;
 
@@ -14,6 +22,8 @@ export class CreateStrategyResponseDTO {
   language: string;
 
   files: CreateStrategyResponseFilesDTO[];
+
+  symbols: CreateStrategyResponseSymbolDTO[];
 
   updated_date: Date;
 
