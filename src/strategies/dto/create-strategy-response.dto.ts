@@ -25,6 +25,8 @@ export class CreateStrategyResponseDTO {
 
   symbols: CreateStrategyResponseSymbolDTO[];
 
+  symbols_candles_granularity: string;
+
   updated_date: Date;
 
   created_date: Date;

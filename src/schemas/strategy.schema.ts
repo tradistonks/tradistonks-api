@@ -34,6 +34,16 @@ export const StockSymbolSchema = SchemaFactory.createForClass(StockSymbol);
 
 export type StrategyDocument = Strategy & Document;
 
+export type StrategySymbolsCandlesGranularity =
+  | '1'
+  | '5'
+  | '15'
+  | '30'
+  | '60'
+  | 'D'
+  | 'W'
+  | 'M';
+
 @Schema()
 export class Strategy {
   _id: MongooseTypes.ObjectId;
@@ -56,6 +66,9 @@ export class Strategy {
 
   @Prop({ type: [StockSymbolSchema], required: true })
   symbols: StockSymbol[];
+
+  @Prop({ type: String, required: true })
+  symbols_candles_granularity: StrategySymbolsCandlesGranularity;
 
   @Prop({ default: Date.now })
   updated_date: Date;

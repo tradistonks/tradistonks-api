@@ -3,11 +3,13 @@ import {
   ArrayMaxSize,
   ArrayMinSize,
   IsArray,
+  IsIn,
   IsString,
   MaxLength,
   MinLength,
   ValidateNested,
 } from 'class-validator';
+import { StrategySymbolsCandlesGranularity } from 'src/schemas/strategy.schema';
 import { ArePropertiesUnique } from '../validators/are-properties-unique.validator';
 import { IsAbsoluteFilePath } from '../validators/is-absolute-file-path.validator';
 import { IsExistingLanguageId } from '../validators/is-existing-language-id.validator';
@@ -57,4 +59,8 @@ export class CreateStrategyBodyDTO {
   @ValidateNested({ each: true })
   @Type(() => CreateStrategyBodySymbolDTO)
   symbols: CreateStrategyBodySymbolDTO[];
+
+  @IsString()
+  @IsIn(['1', '5', '15', '30', '60', 'D', 'W', 'M'])
+  symbols_candles_granularity: string;
 }

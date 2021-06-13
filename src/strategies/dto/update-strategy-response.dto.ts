@@ -1,3 +1,5 @@
+import { StrategySymbolsCandlesGranularity } from 'src/schemas/strategy.schema';
+
 export class UpdateStrategyResponseFilesDTO {
   path: string;
 
@@ -24,6 +26,8 @@ export class UpdateStrategyResponseDTO {
   files: UpdateStrategyResponseFilesDTO[];
 
   symbols: UpdateStrategyResponseSymbolDTO[];
+
+  symbols_candles_granularity: StrategySymbolsCandlesGranularity;
 
   updated_date: Date;
 
