@@ -9,7 +9,6 @@ import {
   MinLength,
   ValidateNested,
 } from 'class-validator';
-import { StrategySymbolsCandlesGranularity } from 'src/schemas/strategy.schema';
 import { ArePropertiesUnique } from '../validators/are-properties-unique.validator';
 import { IsAbsoluteFilePath } from '../validators/is-absolute-file-path.validator';
 import { IsExistingLanguageId } from '../validators/is-existing-language-id.validator';
