@@ -10,6 +10,10 @@ import {
   MinLength,
   ValidateNested,
 } from 'class-validator';
+import {
+  IsMomentValid,
+  TransformToDate,
+} from 'src/validators/is-moment-valid.validator';
 import { ArePropertiesUnique } from '../validators/are-properties-unique.validator';
 import { IsAbsoluteFilePath } from '../validators/is-absolute-file-path.validator';
 import { IsExistingLanguageId } from '../validators/is-existing-language-id.validator';
@@ -68,4 +72,14 @@ export class UpdateStrategyBodyDTO {
   @IsString()
   @IsIn(['1', '5', '15', '30', '60', 'D', 'W', 'M'])
   symbols_candles_granularity: string;
+
+  @IsOptional()
+  @IsMomentValid()
+  @TransformToDate()
+  from: Date;
+
+  @IsOptional()
+  @IsMomentValid()
+  @TransformToDate()
+  to?: Date;
 }

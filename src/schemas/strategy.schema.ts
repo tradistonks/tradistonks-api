@@ -70,6 +70,12 @@ export class Strategy {
   @Prop({ type: String, required: true })
   symbols_candles_granularity: StrategySymbolsCandlesGranularity;
 
+  @Prop({ required: true })
+  from: Date;
+
+  @Prop()
+  to?: Date;
+
   @Prop({ default: Date.now })
   updated_date: Date;
 

@@ -27,6 +27,10 @@ export class CreateStrategyResponseDTO {
 
   symbols_candles_granularity: string;
 
+  from: Date;
+
+  to?: Date;
+
   updated_date: Date;
 
   created_date: Date;

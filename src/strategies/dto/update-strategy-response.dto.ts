@@ -29,6 +29,10 @@ export class UpdateStrategyResponseDTO {
 
   symbols_candles_granularity: StrategySymbolsCandlesGranularity;
 
+  from: Date;
+
+  to?: Date;
+
   updated_date: Date;
 
   created_date: Date;
