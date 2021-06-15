@@ -228,6 +228,7 @@ export class StrategiesController {
       return await this.runnerService.run({
         files: [
           ...strategy.files,
+          ...language.files,
           { path: '/.symbols-data', content: JSON.stringify(history) },
         ],
         compileScript: language.compile_script,
