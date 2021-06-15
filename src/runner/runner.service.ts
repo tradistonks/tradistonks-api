@@ -32,7 +32,7 @@ export class RunnerFailedError extends Error {
   constructor(data: { status: number; message: string }) {
     super(data?.message ?? 'The runner failed');
 
-    this.status = data?.status ?? -1;
+    this.status = data?.status ?? 500;
   }
 
   toJson() {
@@ -78,7 +78,10 @@ export class RunnerService {
 
       return data;
     } catch (e) {
-      throw new RunnerFailedError(e.response?.data);
+      throw new RunnerFailedError({
+        status: e.response?.status,
+        message: e.response?.data?.message,
+      });
     }
   }
 }

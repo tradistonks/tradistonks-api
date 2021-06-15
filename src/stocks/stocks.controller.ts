@@ -6,7 +6,7 @@ export class StocksController {
   constructor(private stocksService: StocksService) {}
 
   @Get('search')
-  async searchStocks(@Query('q') search: string) {
-    return await this.stocksService.searchStocks(search);
+  async searchSymbols(@Query('q') search: string) {
+    return await this.stocksService.searchSymbols(search);
   }
 }

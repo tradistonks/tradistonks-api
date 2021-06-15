@@ -4,6 +4,7 @@ import { LanguagesModule } from 'src/languages/languages.module';
 import { QualityModule } from 'src/quality/quality.module';
 import { RunnerModule } from 'src/runner/runner.module';
 import { SchemasModule } from 'src/schemas/schemas.module';
+import { StocksModule } from 'src/stocks/stocks.module';
 import { UsersModule } from 'src/users/users.module';
 import { StrategiesController } from './strategies.controller';
 import { StrategiesService } from './strategies.service';
@@ -20,6 +21,7 @@ import { IsExistingLanguageIdConstraint } from './validators/is-existing-languag
     QualityModule,
     forwardRef(() => AuthModule),
     forwardRef(() => UsersModule),
+    StocksModule,
   ],
 })
 export class StrategiesModule {}

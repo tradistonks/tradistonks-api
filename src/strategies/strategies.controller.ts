@@ -18,8 +18,10 @@ import { AuthGuard } from 'src/auth/guards/auth.guard';
 import { LanguagesService } from 'src/languages/languages.service';
 import { QualityService } from 'src/quality/quality.service';
 import { RunnerFailedError, RunnerService } from 'src/runner/runner.service';
+import { StrategySymbolsCandlesGranularity } from 'src/schemas/strategy.schema';
 import { User } from 'src/schemas/user.schema';
 import { objectIdsToStrings } from 'src/schemas/utils/object-ids-to-strings.interface';
+import { StocksService, SymbolCandlesResult } from 'src/stocks/stocks.service';
 import { CreateStrategyBodyDTO } from './dto/create-strategy-body.dto';
 import { CreateStrategyResponseDTO } from './dto/create-strategy-response.dto';
 import { GetStrategyParamsDTO } from './dto/get-strategy-params.dto';
@@ -41,6 +43,7 @@ export class StrategiesController {
     private languagesService: LanguagesService,
     private runnerService: RunnerService,
     private qualityService: QualityService,
+    private stocksService: StocksService,
   ) {}
 
   @ApiBearerAuth()
@@ -137,9 +140,96 @@ export class StrategiesController {
       );
     }
 
+    interface SymbolData {
+      name: string;
+      ticker: string;
+      type: string;
+
+      candles: SymbolCandlesResult;
+    }
+
+    const now = new Date();
+
+    const symbolsDataPromises = strategy.symbols.map(async (symbol) => {
+      return <SymbolData>{
+        name: symbol.name,
+        ticker: symbol.ticker,
+        type: symbol.type,
+
+        candles: await this.stocksService.getCandles(
+          symbol.ticker,
+          symbol.type,
+          strategy.from,
+          strategy.to ?? now,
+          strategy.symbols_candles_granularity,
+        ),
+      };
+    });
+
+    const symbolsDataArray = await Promise.all(symbolsDataPromises);
+
+    interface SymbolCandle {
+      open: number;
+      high: number;
+      low: number;
+      close: number;
+      volume: number;
+      timestamp: number;
+    }
+
+    const history: Record<number, Record<string, SymbolCandle>> = {};
+
+    const symbolsDataStartingTimestamp = Math.min(
+      ...symbolsDataArray.map((symbol) => symbol.candles.timestamp[0]),
+    );
+    const symbolsDataEndingTimestamp = Math.max(
+      ...symbolsDataArray.map(
+        (symbol) =>
+          symbol.candles.timestamp[symbol.candles.timestamp.length - 1],
+      ),
+    );
+
+    const granularity = StrategySymbolsCandlesGranularity.toSeconds(
+      strategy.symbols_candles_granularity,
+    );
+
+    const positions: Record<string, number> = {};
+    for (const symbol of symbolsDataArray) {
+      positions[symbol.ticker] = 0;
+    }
+
+    for (
+      let timestamp = symbolsDataStartingTimestamp;
+      timestamp < symbolsDataEndingTimestamp;
+      timestamp += granularity
+    ) {
+      history[timestamp] = {};
+
+      for (const symbol of symbolsDataArray) {
+        const position = positions[symbol.ticker];
+        const candles = symbol.candles;
+
+        if (candles.timestamp[position] === timestamp) {
+          history[timestamp][symbol.ticker] = <SymbolCandle>{
+            open: candles.open[position],
+            high: candles.high[position],
+            low: candles.low[position],
+            close: candles.close[position],
+            volume: candles.volume[position],
+            timestamp: candles.timestamp[position],
+          };
+
+          positions[symbol.ticker]++;
+        }
+      }
+    }
+
     try {
       return await this.runnerService.run({
-        files: strategy.files,
+        files: [
+          ...strategy.files,
+          { path: '/.symbols-data', content: JSON.stringify(history) },
+        ],
         compileScript: language.compile_script,
         runScript: language.run_script,
       });

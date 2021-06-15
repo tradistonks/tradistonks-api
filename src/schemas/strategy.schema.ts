@@ -44,6 +44,30 @@ export type StrategySymbolsCandlesGranularity =
   | 'W'
   | 'M';
 
+// eslint-disable-next-line @typescript-eslint/no-namespace
+export namespace StrategySymbolsCandlesGranularity {
+  export function toSeconds(granularity: StrategySymbolsCandlesGranularity) {
+    switch (granularity) {
+      case '1':
+        return 60;
+      case '5':
+        return 300;
+      case '15':
+        return 900;
+      case '30':
+        return 1800;
+      case '60':
+        return 3600;
+      case 'D':
+        return 86400;
+      case 'W':
+        return 604800;
+      case 'M':
+        return 2678400;
+    }
+  }
+}
+
 @Schema()
 export class Strategy {
   _id: MongooseTypes.ObjectId;
