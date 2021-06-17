@@ -5,6 +5,7 @@ networks:
   redis-network:
   godbox-network:
   tradistonks-api:
+    name: tradistonks-api
   hydra-network:
 
 volumes:
