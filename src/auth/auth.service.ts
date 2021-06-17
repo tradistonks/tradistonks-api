@@ -29,7 +29,7 @@ export class AuthService implements OnModuleInit {
       ],
       response_types: ['token', 'code'],
       scope: 'offline identify',
-      redirect_uris: ['http://localhost:3080/oauth2/callback'],
+      redirect_uris: [process.env.OAUTH2_LOCAL_REDIRECT_URL],
       token_endpoint_auth_method: 'client_secret_post',
     };
 
