@@ -36,9 +36,3 @@ jobs:
 
       - name: Image digest
         run: echo ${{ steps.docker_build.outputs.digest }}
-
-      - name: Update the service via webhooks
-        uses: fjogeleit/http-request-action@master
-        with:
-          url: ${{ secrets.PORTAINER_SERVICE_WEBHOOK }}
-          method: POST
