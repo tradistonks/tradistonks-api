@@ -88,13 +88,14 @@ services:
 
   hydra-migrate:
     image: oryd/hydra:v1.10.2
-    command: migrate sql --yes ${HYDRA_DSN}
+    command: migrate sql --yes -e
     networks:
       - hydra-network
     env_file: .env
     environment:
       LOG_LEVEL: debug
       SECRETS_SYSTEM: ${HYDRA_SECRETS_SYSTEM}
+      DSN: ${HYDRA_DSN}
     restart: on-failure
 
   hydra:
@@ -114,7 +115,7 @@ services:
       LOG_LEVEL: debug
       SECRETS_SYSTEM: ${HYDRA_SECRETS_SYSTEM}
       DSN: ${HYDRA_DSN}
-      URLS_SELF_ISSUER: ${URLS_SELF_ISSUER}
-      URLS_CONSENT: ${URLS_CONSENT}
-      URLS_LOGIN: ${URLS_LOGIN}
+      URLS_SELF_ISSUER: ${HYDRA_URLS_SELF_ISSUER}
+      URLS_CONSENT: ${HYDRA_URLS_CONSENT}
+      URLS_LOGIN: ${HYDRA_URLS_LOGIN}
     restart: on-failure
