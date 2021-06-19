@@ -8,7 +8,7 @@ import { GoQualityGrammarVisitor } from './grammars/go/go-quality-grammar.visito
 export class QualityService {
   private static readonly LANGUAGES_MAP: Record<
     string,
-    { new(): QualityGrammarVisitor }
+    { new (): QualityGrammarVisitor }
   > = {
     go: GoQualityGrammarVisitor,
   };
