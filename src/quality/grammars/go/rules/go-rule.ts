@@ -1,4 +1,4 @@
-import { Rule } from 'src/quality/interfaces/rule';
+import { Rule } from 'src/quality/utils/rule';
 
 import { GoParserVisitor } from '../runtime/GoParserVisitor';
 

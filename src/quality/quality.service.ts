@@ -1,6 +1,6 @@
 import { Injectable, NotImplementedException } from '@nestjs/common';
 
-import { QualityGrammarVisitor } from './interfaces/quality-grammar.visitor';
+import { QualityGrammarVisitor } from './utils/quality-grammar.visitor';
 
 import { GoQualityGrammarVisitor } from './grammars/go/go-quality-grammar.visitor';
 
@@ -8,7 +8,7 @@ import { GoQualityGrammarVisitor } from './grammars/go/go-quality-grammar.visito
 export class QualityService {
   private static readonly LANGUAGES_MAP: Record<
     string,
-    Constructor<QualityGrammarVisitor>
+    { new(): QualityGrammarVisitor }
   > = {
     go: GoQualityGrammarVisitor,
   };

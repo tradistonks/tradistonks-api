@@ -20,6 +20,7 @@ export abstract class QualityGrammarVisitor
             this.addError(rule, ...errors);
           }
         });
+        this.visitChildren(context);
       };
     });
   }
