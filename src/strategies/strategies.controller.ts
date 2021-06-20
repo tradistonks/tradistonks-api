@@ -168,6 +168,26 @@ export class StrategiesController {
 
     const symbolsDataArray = await Promise.all(symbolsDataPromises);
 
+    const config = {
+      timestamp_start: Math.min(
+        ...symbolsDataArray.map((symbol) => symbol.candles.timestamp[0]),
+      ),
+      timestamp_end: Math.max(
+        ...symbolsDataArray.map(
+          (symbol) =>
+            symbol.candles.timestamp[symbol.candles.timestamp.length - 1],
+        ),
+      ),
+      granularity: StrategySymbolsCandlesGranularity.toSeconds(
+        strategy.symbols_candles_granularity,
+      ),
+    };
+
+    const positions: Record<string, number> = {};
+    for (const symbol of symbolsDataArray) {
+      positions[symbol.ticker] = 0;
+    }
+
     interface SymbolCandle {
       open: number;
       high: number;
@@ -177,34 +197,13 @@ export class StrategiesController {
       timestamp: number;
     }
 
-    const symbolsDataStartingTimestamp = Math.min(
-      ...symbolsDataArray.map((symbol) => symbol.candles.timestamp[0]),
-    );
-    const symbolsDataEndingTimestamp = Math.max(
-      ...symbolsDataArray.map(
-        (symbol) =>
-          symbol.candles.timestamp[symbol.candles.timestamp.length - 1],
-      ),
-    );
-
-    const granularity = StrategySymbolsCandlesGranularity.toSeconds(
-      strategy.symbols_candles_granularity,
-    );
-
-    const positions: Record<string, number> = {};
-    for (const symbol of symbolsDataArray) {
-      positions[symbol.ticker] = 0;
-    }
-
     const history: Record<number, Record<string, SymbolCandle>> = {};
-    const timestamps: number[] = [];
 
     for (
-      let timestamp = symbolsDataStartingTimestamp;
-      timestamp < symbolsDataEndingTimestamp;
-      timestamp += granularity
+      let timestamp = config.timestamp_start;
+      timestamp < config.timestamp_end;
+      timestamp += config.granularity
     ) {
-      timestamps.push(timestamp);
       history[timestamp] = {};
 
       for (const symbol of symbolsDataArray) {
@@ -222,6 +221,10 @@ export class StrategiesController {
           };
 
           positions[symbol.ticker]++;
+        } else if (timestamp !== config.timestamp_start) {
+          // Copy the previous ticker value
+          history[timestamp][symbol.ticker] =
+            history[timestamp - config.granularity][symbol.ticker];
         }
       }
     }
@@ -233,8 +236,8 @@ export class StrategiesController {
           ...language.files,
           { path: '/.symbols-data', content: JSON.stringify(history) },
           {
-            path: '/.symbols-data-timestamps',
-            content: JSON.stringify(history),
+            path: '/.symbols-data-config',
+            content: JSON.stringify(config),
           },
         ],
         compileScript: language.compile_script,
