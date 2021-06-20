@@ -72,6 +72,8 @@ services:
     privileged: true
     networks:
       - godbox-network
+    environment:
+      API_MAX_PAYLOAD_SIZE: 33554432
 
   hydra-postgres:
     image: postgres:9.6
