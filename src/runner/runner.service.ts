@@ -72,6 +72,10 @@ export class RunnerService {
               name: 'Execution',
               script: options.runScript,
             },
+            {
+              name: 'Orders',
+              script: 'cat /box/.orders',
+            },
           ],
         },
       });
