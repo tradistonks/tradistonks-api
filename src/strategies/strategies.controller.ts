@@ -177,8 +177,6 @@ export class StrategiesController {
       timestamp: number;
     }
 
-    const history: Record<number, Record<string, SymbolCandle>> = {};
-
     const symbolsDataStartingTimestamp = Math.min(
       ...symbolsDataArray.map((symbol) => symbol.candles.timestamp[0]),
     );
@@ -198,11 +196,15 @@ export class StrategiesController {
       positions[symbol.ticker] = 0;
     }
 
+    const history: Record<number, Record<string, SymbolCandle>> = {};
+    const timestamps: number[] = [];
+
     for (
       let timestamp = symbolsDataStartingTimestamp;
       timestamp < symbolsDataEndingTimestamp;
       timestamp += granularity
     ) {
+      timestamps.push(timestamp);
       history[timestamp] = {};
 
       for (const symbol of symbolsDataArray) {
@@ -230,6 +232,10 @@ export class StrategiesController {
           ...strategy.files,
           ...language.files,
           { path: '/.symbols-data', content: JSON.stringify(history) },
+          {
+            path: '/.symbols-data-timestamps',
+            content: JSON.stringify(history),
+          },
         ],
         compileScript: language.compile_script,
         runScript: language.run_script,
