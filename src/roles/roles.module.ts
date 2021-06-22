@@ -1,4 +1,4 @@
-import { Module } from '@nestjs/common';
+import { forwardRef, Module } from '@nestjs/common';
 import { SchemasModule } from 'src/schemas/schemas.module';
 import { UsersModule } from 'src/users/users.module';
 import { RolesController } from './roles.controller';
@@ -8,6 +8,6 @@ import { RolesService } from './roles.service';
   controllers: [RolesController],
   providers: [RolesService],
   exports: [RolesService],
-  imports: [SchemasModule, UsersModule],
+  imports: [SchemasModule, forwardRef(() => UsersModule)],
 })
 export class RolesModule {}
