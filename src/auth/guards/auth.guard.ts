@@ -4,21 +4,23 @@ import { Session } from 'express-session';
 import { UsersService } from 'src/users/users.service';
 import { AuthService } from '../auth.service';
 import { SessionDTO } from '../../session/dto/session.dto';
+import { User } from 'src/schemas/user.schema';
 
-interface RequestWithSession extends Request {
+export interface RequestWithSession extends Request {
   session: Session & SessionDTO;
+  user?: User;
 }
 
 @Injectable()
 export class AuthGuard implements CanActivate {
   constructor(
-    private authService: AuthService,
-    private usersService: UsersService,
+    protected authService: AuthService,
+    protected usersService: UsersService,
   ) {}
 
-  async canActivate(ctx: ExecutionContext) {
+  async canActivate(context: ExecutionContext) {
     try {
-      const req = ctx.switchToHttp().getRequest<RequestWithSession>();
+      const req = context.switchToHttp().getRequest<RequestWithSession>();
 
       const accessToken =
         req.headers['authorization']?.split?.(' ')?.[1] ??

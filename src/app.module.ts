@@ -10,6 +10,10 @@ import { SessionModule } from './session/session.module';
 import { StrategiesModule } from './strategies/strategies.module';
 import { UsersModule } from './users/users.module';
 import { StocksModule } from './stocks/stocks.module';
+import { PermissionsModule } from './permissions/permissions.module';
+import { RolesModule } from './roles/roles.module';
+import { PermissionsGuard } from './users/guards/permissions.guard';
+import { APP_GUARD } from '@nestjs/core';
 
 @Module({
   imports: [
@@ -26,8 +30,15 @@ import { StocksModule } from './stocks/stocks.module';
     LanguagesModule,
     QualityModule,
     StocksModule,
+    PermissionsModule,
+    RolesModule,
   ],
   controllers: [],
-  providers: [],
+  providers: [
+    {
+      provide: APP_GUARD,
+      useClass: PermissionsGuard,
+    },
+  ],
 })
 export class AppModule {}
