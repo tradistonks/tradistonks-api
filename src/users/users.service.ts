@@ -5,6 +5,8 @@ import { LeanDocument, Model, Types as MongooseTypes } from 'mongoose';
 import { PermissionsService } from 'src/permissions/permissions.service';
 import { Role } from 'src/schemas/role.schema';
 import { User, UserDocument } from 'src/schemas/user.schema';
+import { CreateUserDTO } from './dto/create-user.dto';
+import { EditUserBodyDTO } from './dto/edit-user-body.dto';
 
 @Injectable()
 export class UsersService {
@@ -12,6 +14,10 @@ export class UsersService {
     @InjectModel(User.name) private userModel: Model<UserDocument>,
     private permissionsService: PermissionsService,
   ) {}
+
+  getUsers() {
+    return this.userModel.find();
+  }
 
   getUserById(
     id: string | MongooseTypes.ObjectId,
@@ -38,13 +44,33 @@ export class UsersService {
     return await this.userModel.exists({ username });
   }
 
-  async createUser(
-    data: Omit<User, '_id' | 'created_date' | 'updated_date' | 'roles'>,
-  ) {
+  async createUser(data: CreateUserDTO) {
     return await this.userModel.create({
       ...data,
       password: await bcrypt.hash(data.password, 10),
     });
+  }
+
+  async deleteUser(id: string | MongooseTypes.ObjectId) {
+    const user = await this.userModel.findById(id);
+
+    if (!user) {
+      return false;
+    }
+
+    await user.set({ active: false }).save();
+
+    return true;
+  }
+
+  async updateUser(id: string | MongooseTypes.ObjectId, data: EditUserBodyDTO) {
+    const user = await this.userModel.findById(id);
+
+    if (!user) {
+      return null;
+    }
+
+    return await user.set(data).save();
   }
 
   removeUsersRole(roleId: string) {

@@ -29,6 +29,9 @@ export class User {
   })
   roles: MongooseTypes.ObjectId[];
 
+  @Prop({ default: true })
+  active: boolean;
+
   @Prop({ default: Date.now })
   created_date: Date;
 }

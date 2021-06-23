@@ -2,18 +2,25 @@ import {
   Body,
   ConflictException,
   Controller,
+  Delete,
   Get,
   NotFoundException,
   Param,
   Post,
+  Put,
   UseGuards,
 } from '@nestjs/common';
 import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
 import { AuthUser } from 'src/auth/decorators/auth-user.decorator';
 import { AuthGuard } from 'src/auth/guards/auth.guard';
 import { User } from 'src/schemas/user.schema';
+import { objectIdsToStrings } from 'src/schemas/utils/object-ids-to-strings.interface';
 import { StrategiesService } from 'src/strategies/strategies.service';
 import { CreateUserDTO } from './dto/create-user.dto';
+import { DeleteUserParamsDTO } from './dto/delete-user-params.dto';
+import { EditUserBodyDTO } from './dto/edit-user-body.dto';
+import { EditUserParamsDTO } from './dto/edit-user-params.dto';
+import { Permissions } from './guards/decorators/permissions.decorator';
 import { UsersService } from './users.service';
 
 @ApiTags('Users')
@@ -23,6 +30,16 @@ export class UsersController {
     private usersService: UsersService,
     private strategiesService: StrategiesService,
   ) {}
+
+  @Get()
+  @Permissions(['manage-users'])
+  async getUsers() {
+    const users = await this.usersService.getUsers();
+
+    return users.map((user) =>
+      objectIdsToStrings(user.toObject({ versionKey: false })),
+    );
+  }
 
   @Post()
   async createUser(@Body() body: CreateUserDTO) {
@@ -38,6 +55,33 @@ export class UsersController {
 
     delete user.password;
     return user.toObject({ versionKey: false });
+  }
+
+  @Put(':id')
+  @Permissions(['manage-permissions'])
+  async updateUser(
+    @Param() params: EditUserParamsDTO,
+    @Body() body: EditUserBodyDTO,
+  ) {
+    const permission = await this.usersService.updateUser(params.id, body);
+
+    if (!permission) {
+      throw new NotFoundException();
+    }
+
+    return objectIdsToStrings(permission.toObject({ versionKey: false }));
+  }
+
+  @Delete(':id')
+  @Permissions(['manage-permissions'])
+  async deleteUser(@Param() params: DeleteUserParamsDTO) {
+    const ok = await this.usersService.deleteUser(params.id);
+
+    if (!ok) {
+      throw new NotFoundException();
+    }
+
+    return { ok };
   }
 
   @ApiBearerAuth()
