@@ -230,7 +230,7 @@ export class StrategiesController {
     }
 
     try {
-      return await this.runnerService.run({
+      const { phases } = await this.runnerService.run({
         files: [
           ...strategy.files,
           ...language.files,
@@ -243,6 +243,23 @@ export class StrategiesController {
         compileScript: language.compile_script,
         runScript: language.run_script,
       });
+
+      if (phases.length < 3) {
+        return { phases };
+      }
+
+      const lastPhase = phases.pop();
+
+      if (lastPhase.status !== 0) {
+        return { phases };
+      }
+
+      const orders = JSON.parse(lastPhase.stdout);
+
+      return {
+        phases,
+        orders,
+      };
     } catch (e) {
       if (e instanceof RunnerFailedError) {
         throw new HttpException(e.toJson(), e.status);

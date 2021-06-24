@@ -11,6 +11,14 @@ export class RunStrategyResponseDTOPhase {
   csw_forced: number;
 }
 
+export class RunStrategyResponseDTOOrder {
+  type: 'Buy' | 'Sell';
+  symbol: string;
+  quantity: number;
+  timestamp: number;
+}
+
 export class RunStrategyResponseDTO {
   phases: RunStrategyResponseDTOPhase[];
+  orders?: RunStrategyResponseDTOOrder[];
 }
