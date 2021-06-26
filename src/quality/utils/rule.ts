@@ -1,5 +1,9 @@
+import { RuleContext } from 'antlr4ts';
+
 export interface Rule {
-  type: string;
   errorMessage: string;
-  test: (context: unknown) => string[];
+  hooks: {
+    type: string;
+    test: (context: RuleContext) => string[] | void;
+  }[];
 }
