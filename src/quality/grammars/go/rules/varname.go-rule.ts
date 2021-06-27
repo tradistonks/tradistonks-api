@@ -18,7 +18,7 @@ export const goVarnameRule: GoRule = {
           const invalidVar = ctx
             .identifierList()
             .IDENTIFIER()
-            .find(i => !/^[a-zA-Z][a-zA-Z0-9]*$/.test(i.text));
+            .find((i) => !/^[a-zA-Z][a-zA-Z0-9]*$/.test(i.text));
           if (!!invalidVar) {
             return [invalidVar.text];
           }
@@ -53,7 +53,7 @@ export const goVarnameRule: GoRule = {
           const invalidVar = ctx
             .identifierList()
             .IDENTIFIER()
-            .find(i => !/^[a-zA-Z][a-zA-Z0-9]*$/.test(i.text));
+            .find((i) => !/^[a-zA-Z][a-zA-Z0-9]*$/.test(i.text));
           if (!!invalidVar) {
             return [invalidVar.text];
           }
