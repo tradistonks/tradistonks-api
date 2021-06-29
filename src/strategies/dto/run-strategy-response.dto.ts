@@ -18,7 +18,26 @@ export class RunStrategyResponseDTOOrder {
   timestamp: number;
 }
 
+export class RunStrategyResponseDTOHistoryCandle {
+  open: number;
+  high: number;
+  low: number;
+  close: number;
+  volume: number;
+  timestamp: number;
+}
+
+export class RunStrategyResponseDTOConfig {
+  timestamp_start: number;
+  timestamp_end: number;
+  granularity: number;
+}
+
 export class RunStrategyResponseDTO {
   phases: RunStrategyResponseDTOPhase[];
   orders?: RunStrategyResponseDTOOrder[];
+  history?: Record<number, Record<string, RunStrategyResponseDTOHistoryCandle>>;
+  config?: RunStrategyResponseDTOConfig;
+
+  pnl?: Record<number, Record<string, number>>;
 }

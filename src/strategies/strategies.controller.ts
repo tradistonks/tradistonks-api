@@ -29,7 +29,11 @@ import { GetStrategyResponseDTO } from './dto/get-strategy-response.dto';
 import { QualityStrategyParamsDTO } from './dto/quality-strategy-params.dto';
 import { QualityStrategyResponseItemDTO } from './dto/quality-strategy-response.dto';
 import { RunStrategyParamsDTO } from './dto/run-strategy-params.dto';
-import { RunStrategyResponseDTO } from './dto/run-strategy-response.dto';
+import {
+  RunStrategyResponseDTO,
+  RunStrategyResponseDTOHistoryCandle,
+  RunStrategyResponseDTOOrder,
+} from './dto/run-strategy-response.dto';
 import { UpdateStrategyBodyDTO } from './dto/update-strategy-body.dto';
 import { UpdateStrategyParamsDTO } from './dto/update-strategy-params.dto';
 import { UpdateStrategyResponseDTO } from './dto/update-strategy-response.dto';
@@ -188,22 +192,18 @@ export class StrategiesController {
       positions[symbol.ticker] = 0;
     }
 
-    interface SymbolCandle {
-      open: number;
-      high: number;
-      low: number;
-      close: number;
-      volume: number;
-      timestamp: number;
-    }
-
-    const history: Record<number, Record<string, SymbolCandle>> = {};
+    const timestamps: number[] = [];
+    const history: Record<
+      number,
+      Record<string, RunStrategyResponseDTOHistoryCandle>
+    > = {};
 
     for (
       let timestamp = config.timestamp_start;
       timestamp < config.timestamp_end;
       timestamp += config.granularity
     ) {
+      timestamps.push(timestamp);
       history[timestamp] = {};
 
       for (const symbol of symbolsDataArray) {
@@ -211,7 +211,7 @@ export class StrategiesController {
         const candles = symbol.candles;
 
         if (candles.timestamp[position] === timestamp) {
-          history[timestamp][symbol.ticker] = <SymbolCandle>{
+          history[timestamp][symbol.ticker] = {
             open: candles.open[position],
             high: candles.high[position],
             low: candles.low[position],
@@ -254,11 +254,22 @@ export class StrategiesController {
         return { phases };
       }
 
-      const orders = JSON.parse(lastPhase.stdout);
+      const orders: RunStrategyResponseDTOOrder[] = JSON.parse(
+        lastPhase.stdout,
+      );
+
+      const pnl = this.strategiesService.calculatePnl(
+        timestamps,
+        history,
+        orders,
+      );
 
       return {
         phases,
         orders,
+        history,
+        config,
+        pnl,
       };
     } catch (e) {
       if (e instanceof RunnerFailedError) {
