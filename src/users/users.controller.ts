@@ -128,6 +128,17 @@ export class UsersController {
 
   @ApiBearerAuth()
   @UseGuards(AuthGuard)
+  @Get('me/strategies')
+  async getCurrentUserStrategies(@AuthUser() user: User) {
+    const strategies = await this.strategiesService.getByUserId(user._id);
+
+    return strategies.map((strategy) =>
+      strategy.toObject({ versionKey: false }),
+    );
+  }
+
+  @ApiBearerAuth()
+  @UseGuards(AuthGuard)
   @Get(':username/strategies')
   async getUserStrategies(@Param('username') username: string) {
     const user = await this.usersService.getUserByUsername(username);
