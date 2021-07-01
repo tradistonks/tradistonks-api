@@ -4,7 +4,7 @@ import {
   Injectable,
   OnModuleInit,
 } from '@nestjs/common';
-import { AdminApi, Configuration } from '@oryd/hydra-client';
+import { AdminApi, Configuration } from '@ory/hydra-client';
 import bcrypt from 'bcrypt';
 import { Types as MongooseTypes } from 'mongoose';
 import { UsersService } from '../users/users.service';

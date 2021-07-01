@@ -1,4 +1,4 @@
-import { Module } from '@nestjs/common';
+import { MiddlewareConsumer, Module, RequestMethod } from '@nestjs/common';
 import { MongooseModule } from '@nestjs/mongoose';
 import { AuthModule } from './auth/auth.module';
 import { LanguagesModule } from './languages/languages.module';
@@ -6,7 +6,7 @@ import { QualityModule } from './quality/quality.module';
 import { RedisModule } from './redis/redis.module';
 import { RunnerModule } from './runner/runner.module';
 import { SchemasModule } from './schemas/schemas.module';
-import { SessionModule } from './session/session.module';
+import { SessionMiddleware } from './session/session.middleware';
 import { StrategiesModule } from './strategies/strategies.module';
 import { UsersModule } from './users/users.module';
 import { StocksModule } from './stocks/stocks.module';
@@ -21,7 +21,6 @@ import { APP_GUARD } from '@nestjs/core';
       useCreateIndex: true,
     }),
     SchemasModule,
-    SessionModule,
     RedisModule,
     AuthModule,
     UsersModule,
@@ -41,4 +40,11 @@ import { APP_GUARD } from '@nestjs/core';
     },
   ],
 })
-export class AppModule {}
+export class AppModule {
+  configure(consumer: MiddlewareConsumer) {
+    consumer.apply(SessionMiddleware).forRoutes({
+      path: '*',
+      method: RequestMethod.ALL,
+    });
+  }
+}
