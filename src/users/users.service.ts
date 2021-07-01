@@ -5,6 +5,7 @@ import { LeanDocument, Model, Types as MongooseTypes } from 'mongoose';
 import { PermissionsService } from 'src/permissions/permissions.service';
 import { Role } from 'src/schemas/role.schema';
 import { User, UserDocument } from 'src/schemas/user.schema';
+import { Replace } from 'src/utils/replace.type';
 import { CreateUserDTO } from './dto/create-user.dto';
 import { EditUserBodyDTO } from './dto/edit-user-body.dto';
 
@@ -87,17 +88,12 @@ export class UsersService {
   async getUserRolesById(id: string | MongooseTypes.ObjectId) {
     const user = await this.getUserById(id, { roles: 1 })
       .populate(['roles'])
-      .lean<LeanDocument<Omit<UserDocument, 'roles'> & { roles: Role[] }>>();
+      .lean<LeanDocument<Replace<UserDocument, 'roles', Role[]>>>();
 
     return user?.roles;
   }
 
-  private async hasPermissionsCodes(
-    roles: (Pick<Role, '_id' | 'name'> & {
-      permissions: MongooseTypes.ObjectId[];
-    })[],
-    permissionCodes: string[],
-  ) {
+  private async hasPermissionsCodes(roles: Role[], permissionCodes: string[]) {
     const permissions = await this.permissionsService.getPermissionsByCodes(
       ...permissionCodes,
     );

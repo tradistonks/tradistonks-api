@@ -1,10 +1,11 @@
 import { forwardRef, Module } from '@nestjs/common';
-import { UsersService } from './users.service';
-import { UsersController } from './users.controller';
-import { SchemasModule } from 'src/schemas/schemas.module';
-import { StrategiesModule } from 'src/strategies/strategies.module';
 import { AuthModule } from 'src/auth/auth.module';
 import { PermissionsModule } from 'src/permissions/permissions.module';
+import { RolesModule } from 'src/roles/roles.module';
+import { SchemasModule } from 'src/schemas/schemas.module';
+import { StrategiesModule } from 'src/strategies/strategies.module';
+import { UsersController } from './users.controller';
+import { UsersService } from './users.service';
 
 @Module({
   providers: [UsersService],
@@ -13,6 +14,7 @@ import { PermissionsModule } from 'src/permissions/permissions.module';
   imports: [
     SchemasModule,
     StrategiesModule,
+    RolesModule,
     PermissionsModule,
     forwardRef(() => AuthModule),
   ],

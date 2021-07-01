@@ -11,11 +11,17 @@ import {
   UseGuards,
 } from '@nestjs/common';
 import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
+import { LeanDocument } from 'mongoose';
 import { AuthUser } from 'src/auth/decorators/auth-user.decorator';
 import { AuthGuard } from 'src/auth/guards/auth.guard';
+import { PermissionsService } from 'src/permissions/permissions.service';
+import { RolesService } from 'src/roles/roles.service';
+import { Permission } from 'src/schemas/permission.schema';
+import { RoleDocument } from 'src/schemas/role.schema';
 import { User } from 'src/schemas/user.schema';
 import { objectIdsToStrings } from 'src/schemas/utils/object-ids-to-strings.interface';
 import { StrategiesService } from 'src/strategies/strategies.service';
+import { Replace } from 'src/utils/replace.type';
 import { CreateUserDTO } from './dto/create-user.dto';
 import { DeleteUserParamsDTO } from './dto/delete-user-params.dto';
 import { EditUserBodyDTO } from './dto/edit-user-body.dto';
@@ -29,6 +35,8 @@ export class UsersController {
   constructor(
     private usersService: UsersService,
     private strategiesService: StrategiesService,
+    private rolesService: RolesService,
+    private permissionsService: PermissionsService,
   ) {}
 
   @Get()
@@ -104,13 +112,18 @@ export class UsersController {
 
   @ApiBearerAuth()
   @UseGuards(AuthGuard)
-  @Get('me/strategies')
-  async getCurrentUserStrategies(@AuthUser() user: User) {
-    const strategies = await this.strategiesService.getByUserId(user._id);
+  @Get('me/permissions')
+  async getCurrentUserPermissions(@AuthUser() user: User) {
+    const roles = await this.rolesService
+      .getRoles({ _id: user.roles }, ['permissions'])
+      .populate('permissions')
+      .lean<
+        LeanDocument<Replace<RoleDocument, 'permissions', Permission[]>>[]
+      >();
 
-    return strategies.map((strategy) =>
-      strategy.toObject({ versionKey: false }),
-    );
+    return roles
+      .map((role) => role.permissions.map((permission) => permission.code))
+      .reduce((acc, val) => acc.concat(val), []);
   }
 
   @ApiBearerAuth()

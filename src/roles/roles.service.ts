@@ -1,9 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
-import { Model, Types as MongooseTypes } from 'mongoose';
-
+import { FilterQuery, Model, Types as MongooseTypes } from 'mongoose';
 import { Role, RoleDocument } from 'src/schemas/role.schema';
-
 import { CreateRoleBodyDTO } from './dto/create-role-body.dto';
 import { EditRoleBodyDTO } from './dto/edit-role-body.dto';
 
@@ -11,8 +9,8 @@ import { EditRoleBodyDTO } from './dto/edit-role-body.dto';
 export class RolesService {
   constructor(@InjectModel(Role.name) private roleModel: Model<RoleDocument>) {}
 
-  getRoles() {
-    return this.roleModel.find();
+  getRoles(filter?: FilterQuery<RoleDocument>, projection?: (keyof Role)[]) {
+    return this.roleModel.find(filter, projection);
   }
 
   createRole(data: CreateRoleBodyDTO) {
