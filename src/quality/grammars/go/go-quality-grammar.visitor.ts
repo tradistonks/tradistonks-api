@@ -11,7 +11,8 @@ import { GoRule, GO_RULES } from './rules';
 
 export class GoQualityGrammarVisitor
   extends QualityGrammarVisitor
-  implements GoParserVisitor<void> {
+  implements GoParserVisitor<void>
+{
   protected readonly rules: GoRule[] = GO_RULES;
 
   run(source: string): Quality {

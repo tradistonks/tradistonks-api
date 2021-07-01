@@ -64,14 +64,13 @@ export class AuthService implements OnModuleInit {
 
       await this.hydraAdmin.getLoginRequest(loginChallenge);
 
-      const {
-        data: acceptLoginRequest,
-      } = await this.hydraAdmin.acceptLoginRequest(loginChallenge, {
-        subject: (user._id as MongooseTypes.ObjectId).toHexString(),
-        remember: true,
-        remember_for: 3600,
-        acr: '0',
-      });
+      const { data: acceptLoginRequest } =
+        await this.hydraAdmin.acceptLoginRequest(loginChallenge, {
+          subject: (user._id as MongooseTypes.ObjectId).toHexString(),
+          remember: true,
+          remember_for: 3600,
+          acr: '0',
+        });
 
       return acceptLoginRequest.redirect_to;
     } catch (e) {
@@ -86,25 +85,23 @@ export class AuthService implements OnModuleInit {
 
   async consent(consentChallenge: string) {
     try {
-      const {
-        data: getConsentRequest,
-      } = await this.hydraAdmin.getConsentRequest(consentChallenge);
+      const { data: getConsentRequest } =
+        await this.hydraAdmin.getConsentRequest(consentChallenge);
 
-      const {
-        data: acceptConsentRequest,
-      } = await this.hydraAdmin.acceptConsentRequest(consentChallenge, {
-        grant_scope: getConsentRequest.requested_scope,
-        grant_access_token_audience:
-          getConsentRequest.requested_access_token_audience,
-        session: {
-          access_token: {
-            subject: getConsentRequest.subject,
-            scopes: getConsentRequest.requested_scope,
+      const { data: acceptConsentRequest } =
+        await this.hydraAdmin.acceptConsentRequest(consentChallenge, {
+          grant_scope: getConsentRequest.requested_scope,
+          grant_access_token_audience:
+            getConsentRequest.requested_access_token_audience,
+          session: {
+            access_token: {
+              subject: getConsentRequest.subject,
+              scopes: getConsentRequest.requested_scope,
+            },
           },
-        },
-        remember: true,
-        remember_for: 3600,
-      });
+          remember: true,
+          remember_for: 3600,
+        });
 
       return acceptConsentRequest.redirect_to;
     } catch (e) {
@@ -118,9 +115,8 @@ export class AuthService implements OnModuleInit {
   }
 
   async introspect(accessToken: string) {
-    const {
-      data: introspectRequest,
-    } = await this.hydraAdmin.introspectOAuth2Token(accessToken);
+    const { data: introspectRequest } =
+      await this.hydraAdmin.introspectOAuth2Token(accessToken);
 
     if (!introspectRequest.active) {
       throw new ForbiddenException(`Invalid or expired access token`);

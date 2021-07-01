@@ -4,7 +4,7 @@ import { Types } from 'mongoose';
 export type ObjectDocument<
   // eslint-disable-next-line @typescript-eslint/ban-types
   T extends Object,
-  ObjectIdDestinationType = string
+  ObjectIdDestinationType = string,
 > = {
   [K in keyof T]: T[K] extends Types.ObjectId ? ObjectIdDestinationType : T[K];
 };

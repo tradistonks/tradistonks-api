@@ -6,7 +6,8 @@ import { Rule } from './rule';
 
 export abstract class QualityGrammarVisitor
   extends AbstractParseTreeVisitor<void>
-  implements ParseTreeVisitor<void> {
+  implements ParseTreeVisitor<void>
+{
   protected quality = new Quality();
   protected readonly rules: Rule[] = [];
 

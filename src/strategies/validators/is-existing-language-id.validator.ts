@@ -26,7 +26,8 @@ export function IsExistingLanguageId(
 @ValidatorConstraint({ name: 'IsExistingLanguageId', async: true })
 @Injectable()
 export class IsExistingLanguageIdConstraint
-  implements ValidatorConstraintInterface {
+  implements ValidatorConstraintInterface
+{
   constructor(private languagesService: LanguagesService) {}
 
   async validate(value: any) {
