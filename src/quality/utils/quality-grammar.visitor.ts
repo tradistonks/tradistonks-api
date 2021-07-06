@@ -10,7 +10,7 @@ export abstract class QualityGrammarVisitor
   implements ParseTreeVisitor<void>
 {
   protected quality = new Quality();
-  protected readonly rules: Rule[] = [];
+  protected readonly rules: Rule<string>[] = [];
 
   protected setup() {
     this.getRuleTypes().forEach((type) => {
@@ -31,7 +31,7 @@ export abstract class QualityGrammarVisitor
 
   public abstract run(source: string): Quality;
 
-  private getRulesByType(type: string): Rule[] {
+  private getRulesByType(type: string): Rule<string>[] {
     return this.rules
       .map((r) => {
         return { ...r, hooks: r.hooks.filter((h) => h.type === type) };
@@ -51,7 +51,7 @@ export abstract class QualityGrammarVisitor
     ];
   }
 
-  private addError(rule: Rule, ...errors: string[]) {
+  private addError(rule: Rule<string>, ...errors: string[]) {
     this.quality.errors.push(
       errors.reduce((errorMessage, current) => {
         return errorMessage.replace('{}', current);
