@@ -10,7 +10,8 @@ import { CppRule, CPP_RULES } from './rules';
 
 export class CPPQualityGrammarVisitor
   extends QualityGrammarVisitor
-  implements CPP14ParserVisitor<void> {
+  implements CPP14ParserVisitor<void>
+{
   protected readonly rules: CppRule[] = CPP_RULES;
 
   run(source: string): any {

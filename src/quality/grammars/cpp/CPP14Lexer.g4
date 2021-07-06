@@ -400,10 +400,10 @@ UserDefinedCharacterLiteral: CharacterLiteral Udsuffix;
 
 fragment Udsuffix: Identifier;
 
-Whitespace: [ \t]+ -> skip;
+Whitespace: [ \t]+ -> channel(HIDDEN);
 
-Newline: ('\r' '\n'? | '\n') -> skip;
+Newline: ('\r' '\n'? | '\n') -> channel(HIDDEN);
 
-BlockComment: '/*' .*? '*/' -> skip;
+BlockComment: '/*' .*? '*/' -> channel(HIDDEN);
 
-LineComment: '//' ~ [\r\n]* -> skip;
+LineComment: '//' ~ [\r\n]* -> channel(HIDDEN);

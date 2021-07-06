@@ -11,8 +11,8 @@ export class QualityService {
     string,
     { new (): QualityGrammarVisitor }
   > = {
-    'go': GoQualityGrammarVisitor,
-    'c++': CPPQualityGrammarVisitor
+    go: GoQualityGrammarVisitor,
+    'c++': CPPQualityGrammarVisitor,
   };
 
   public run(source: string, language: string) {

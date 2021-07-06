@@ -9,11 +9,13 @@ export const cppFuncnameRule: CppRule = {
     {
       type: 'visitFunctionDefinition',
       test: (context: FunctionDefinitionContext) => {
-        return [];
-        const name = context.declarator();
-        console.log(name.text);
-        if (!/^[a-z][a-z_]*$/.test(name.text)) {
-          return [name.text];
+        const name = context
+          .declarator()
+          ?.pointerDeclarator()
+          ?.noPointerDeclarator()
+          ?.noPointerDeclarator()?.text;
+        if (!/^[a-z][a-z_]*$/.test(name)) {
+          return [name];
         }
       },
     },
