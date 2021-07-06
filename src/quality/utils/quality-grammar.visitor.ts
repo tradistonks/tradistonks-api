@@ -1,3 +1,4 @@
+import { RuleContext } from 'antlr4ts';
 import { AbstractParseTreeVisitor } from 'antlr4ts/tree/AbstractParseTreeVisitor';
 import { ParseTreeVisitor } from 'antlr4ts/tree/ParseTreeVisitor';
 
@@ -14,12 +15,14 @@ export abstract class QualityGrammarVisitor
   protected setup() {
     this.getRuleTypes().forEach((type) => {
       const rules = this.getRulesByType(type);
-      this[type] = (context: any) => {
+      this[type] = (context: RuleContext) => {
         rules.forEach((rule) => {
-          const errors = rule.test(context);
-          if (!!errors) {
-            this.addError(rule, ...errors);
-          }
+          rule.hooks.forEach((r) => {
+            const errors = r.test(context);
+            if (!!errors) {
+              this.addError(rule, ...errors);
+            }
+          });
         });
         this.visitChildren(context);
       };
@@ -29,11 +32,23 @@ export abstract class QualityGrammarVisitor
   public abstract run(source: string): Quality;
 
   private getRulesByType(type: string): Rule[] {
-    return this.rules.filter((r) => r.type === type);
+    return this.rules
+      .map((r) => {
+        return { ...r, hooks: r.hooks.filter((h) => h.type === type) };
+      })
+      .filter((r) => r.hooks.length > 0);
   }
 
   private getRuleTypes(): string[] {
-    return [...new Set(this.rules.map((r) => r.type))];
+    return [
+      ...new Set(
+        this.rules
+          .map((r) => r.hooks.map((h) => h.type))
+          .reduce((pv, cv) => {
+            return pv.concat(cv);
+          }, []),
+      ),
+    ];
   }
 
   private addError(rule: Rule, ...errors: string[]) {
