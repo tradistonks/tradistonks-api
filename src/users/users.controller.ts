@@ -14,7 +14,6 @@ import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
 import { LeanDocument } from 'mongoose';
 import { AuthUser } from 'src/auth/decorators/auth-user.decorator';
 import { AuthGuard } from 'src/auth/guards/auth.guard';
-import { PermissionsService } from 'src/permissions/permissions.service';
 import { RolesService } from 'src/roles/roles.service';
 import { Permission } from 'src/schemas/permission.schema';
 import { RoleDocument } from 'src/schemas/role.schema';
@@ -36,7 +35,6 @@ export class UsersController {
     private usersService: UsersService,
     private strategiesService: StrategiesService,
     private rolesService: RolesService,
-    private permissionsService: PermissionsService,
   ) {}
 
   @Get()

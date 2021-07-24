@@ -4,7 +4,7 @@ import {
   Injectable,
   OnModuleInit,
 } from '@nestjs/common';
-import { AdminApi, Configuration } from '@ory/hydra-client';
+import { AdminApi, Configuration, OAuth2Client } from '@ory/hydra-client';
 import bcrypt from 'bcrypt';
 import { Types as MongooseTypes } from 'mongoose';
 import { UsersService } from '../users/users.service';
@@ -20,32 +20,49 @@ export class AuthService implements OnModuleInit {
   constructor(private usersService: UsersService) {}
 
   async onModuleInit() {
-    const clientConfiguration = {
-      client_secret: process.env.OAUTH2_CLIENT_SECRET,
-      grant_types: [
-        'authorization_code',
-        'refresh_token',
-        'client_credentials',
-      ],
-      response_types: ['token', 'code'],
-      scope: 'offline identify',
-      redirect_uris: [process.env.OAUTH2_LOCAL_REDIRECT_URL],
-      token_endpoint_auth_method: 'client_secret_post',
-    };
-
-    try {
-      await this.hydraAdmin.getOAuth2Client(process.env.OAUTH2_CLIENT_ID);
-
-      await this.hydraAdmin.updateOAuth2Client(process.env.OAUTH2_CLIENT_ID, {
-        client_secret: process.env.OAUTH2_CLIENT_SECRET,
-        ...clientConfiguration,
-      });
-    } catch (error) {
-      await this.hydraAdmin.createOAuth2Client({
+    const configs: OAuth2Client[] = [
+      {
         client_id: process.env.OAUTH2_CLIENT_ID,
-        ...clientConfiguration,
-      });
-    }
+        client_secret: process.env.OAUTH2_CLIENT_SECRET,
+        grant_types: [
+          'authorization_code',
+          'refresh_token',
+          'client_credentials',
+        ],
+        response_types: ['token', 'code'],
+        scope: 'offline identify',
+        redirect_uris: [process.env.OAUTH2_LOCAL_REDIRECT_URL],
+        token_endpoint_auth_method: 'client_secret_post',
+      },
+      {
+        client_id: process.env.OAUTH2_MOBILE_CLIENT_ID,
+        client_secret: process.env.OAUTH2_MOBILE_CLIENT_SECRET,
+        grant_types: [
+          'authorization_code',
+          'refresh_token',
+          'client_credentials',
+        ],
+        response_types: ['token', 'code'],
+        scope: 'offline identify',
+        redirect_uris: [process.env.OAUTH2_MOBILE_LOCAL_REDIRECT_URL],
+        token_endpoint_auth_method: 'client_secret_post',
+      },
+    ];
+
+    this.createOrUpdateOAuth2Clients(configs);
+  }
+
+  private async createOrUpdateOAuth2Clients(configs: OAuth2Client[]) {
+    const promises = configs.map(async (config) => {
+      try {
+        await this.hydraAdmin.getOAuth2Client(config.client_id);
+        await this.hydraAdmin.updateOAuth2Client(config.client_id, config);
+      } catch (error) {
+        await this.hydraAdmin.createOAuth2Client(config);
+      }
+    });
+
+    return await Promise.all(promises);
   }
 
   async login(loginChallenge: string, email: string, password: string) {
