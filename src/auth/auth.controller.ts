@@ -6,6 +6,7 @@ import {
   UnauthorizedException,
   UseGuards,
   Session,
+  Get,
 } from '@nestjs/common';
 import { AuthGuard } from '@nestjs/passport';
 import { ApiTags } from '@nestjs/swagger';
@@ -22,7 +23,6 @@ import { SessionDTO } from '../session/dto/session.dto';
 export class AuthController {
   constructor(private authService: AuthService) {}
 
-  // @UseGuards(LocalAuthGuard)
   @Post('login')
   async login(@Body() body: LoginBodyDTO) {
     const redirect_to = await this.authService.login(
@@ -38,6 +38,12 @@ export class AuthController {
     return {
       redirect_to,
     };
+  }
+
+  @Get('consent')
+  async getConsent(@Query('consent_challenge') consentChallenge: string) {
+    const result = await this.authService.getConsent(consentChallenge);
+    return result;
   }
 
   @Post('consent')

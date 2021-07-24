@@ -131,6 +131,16 @@ export class AuthService implements OnModuleInit {
     }
   }
 
+  async getConsent(consentChallenge: string) {
+    const { data: getConsentRequest } = await this.hydraAdmin.getConsentRequest(
+      consentChallenge,
+    );
+
+    return {
+      client_id: getConsentRequest.client.client_id,
+    };
+  }
+
   async introspect(accessToken: string) {
     const { data: introspectRequest } =
       await this.hydraAdmin.introspectOAuth2Token(accessToken);
