@@ -19,7 +19,7 @@ export class UpdateLanguageBodyFilesDTO {
   path: string;
 
   @IsString()
-  @MaxLength(512 * 1024)
+  @MaxLength(1024 * 1024)
   content: string;
 }
 
@@ -36,12 +36,12 @@ export class UpdateLanguageBodyDTO {
 
   @IsOptional()
   @IsString()
-  @MaxLength(512 * 1024)
+  @MaxLength(1024 * 1024)
   compile_script?: string;
 
   @IsOptional()
   @IsString()
-  @MaxLength(512 * 1024)
+  @MaxLength(1024 * 1024)
   run_script?: string;
 
   @IsOptional()
