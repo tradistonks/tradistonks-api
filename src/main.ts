@@ -4,12 +4,16 @@ import { NestExpressApplication } from '@nestjs/platform-express';
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
 import { useContainer } from 'class-validator';
 import cookieParser from 'cookie-parser';
+import { json, urlencoded } from 'express';
 import { AppModule } from './app.module';
 
 async function bootstrap() {
   const app = await NestFactory.create<NestExpressApplication>(AppModule);
 
   app.set('trust proxy', process.env.API_TRUST_PROXY === 'true' ? 1 : 0);
+
+  app.use(json({ limit: '50mb' }));
+  app.use(urlencoded({ extended: true, limit: '50mb' }));
 
   useContainer(app.select(AppModule), { fallbackOnErrors: true });
 
