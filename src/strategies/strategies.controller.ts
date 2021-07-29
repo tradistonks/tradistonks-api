@@ -283,7 +283,7 @@ export class StrategiesController {
 
   @ApiBearerAuth()
   @UseGuards(AuthGuard)
-  @Post(':strategy_id/quality')
+  @Get(':strategy_id/quality')
   async strategyQuality(
     @AuthUser() user: User,
     @Param() params: QualityStrategyParamsDTO,
