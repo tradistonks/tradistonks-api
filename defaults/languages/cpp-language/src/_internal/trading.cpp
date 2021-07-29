@@ -1,7 +1,7 @@
 #include <trading.hpp>
 
-std::vector<Tradistonks::Order> Tradistonks::Orders;
-unsigned long Tradistonks::CurrentTimestamp = 0;
+std::vector<Tradistonks::Order> Tradistonks::orders;
+unsigned long Tradistonks::current_timestamp = 0;
 
 json unmarshall(const std::string &path)
 {
@@ -12,13 +12,13 @@ json unmarshall(const std::string &path)
     return j;
 }
 
-std::map<unsigned long, std::map<std::string, Tradistonks::SymbolDataCandle>> Tradistonks::getSymbolsData()
+std::map<unsigned long, std::map<std::string, Tradistonks::SymbolDataCandle>> Tradistonks::get_symbols_data()
 {
     auto j = unmarshall(".symbols-data");
 
     std::map<unsigned long, std::map<std::string, SymbolDataCandle>> out;
 
-    for (auto &[timestamp_string, symbols] : j.items())
+    for (const auto &[timestamp_string, symbols] : j.items())
     {
         auto timestamp = stoul(timestamp_string);
 
@@ -33,7 +33,7 @@ std::map<unsigned long, std::map<std::string, Tradistonks::SymbolDataCandle>> Tr
     return out;
 }
 
-Tradistonks::SymbolsDataConfig Tradistonks::getSymbolsDataConfig()
+Tradistonks::SymbolsDataConfig Tradistonks::get_symbols_data_config()
 {
     auto j = unmarshall(".symbols-data-config");
     return SymbolsDataConfig::from(j);
@@ -41,12 +41,12 @@ Tradistonks::SymbolsDataConfig Tradistonks::getSymbolsDataConfig()
 
 void Tradistonks::push_order(const Tradistonks::Order &order)
 {
-    Orders.push_back(order);
+    orders.push_back(order);
 }
 
 void Tradistonks::create_and_push_order(const std::string &order_type, const std::string &symbol, double quantity)
 {
-    Orders.push_back(Order{order_type, symbol, quantity, CurrentTimestamp});
+    orders.push_back(Order{order_type, symbol, quantity, current_timestamp});
 }
 
 void Tradistonks::buy(const std::string &symbol, double quantity)
@@ -63,7 +63,7 @@ void Tradistonks::write_orders_file()
 {
     auto j = json::array();
 
-    for (const auto &order : Orders)
+    for (const auto &order : orders)
     {
         json order_j;
         order_j["type"] = order.type;

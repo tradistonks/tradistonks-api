@@ -31,8 +31,8 @@ struct Order
     }
 };
 
-extern std::vector<Order> Orders;
-extern unsigned long CurrentTimestamp;
+extern std::vector<Order> orders;
+extern unsigned long current_timestamp;
 
 void push_order(const Order &order);
 void create_and_push_order(const std::string &order_type, const std::string &symbol, double quantity);

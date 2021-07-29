@@ -7,8 +7,8 @@
 
 int main()
 {
-    auto data = Tradistonks::getSymbolsData();
-    auto config = Tradistonks::getSymbolsDataConfig();
+    auto data = Tradistonks::get_symbols_data();
+    auto config = Tradistonks::get_symbols_data_config();
 
     std::vector<unsigned long> historical_timestamps;
     std::map<unsigned long, std::map<std::string, Tradistonks::SymbolDataCandle>> historical_data;
@@ -17,10 +17,10 @@ int main()
 
     for (unsigned long timestamp = config.timestamp_start; timestamp <= config.timestamp_end; timestamp += config.granularity)
     {
-        Tradistonks::CurrentTimestamp = timestamp;
+        Tradistonks::current_timestamp = timestamp;
         auto &symbols = data[timestamp];
 
-        decisionPhase(Tradistonks::DecisionPhaseData{
+        decision_phase(Tradistonks::DecisionPhaseData{
             timestamp,
             symbols,
             historical_timestamps,

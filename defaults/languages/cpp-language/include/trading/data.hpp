@@ -52,8 +52,8 @@ struct SymbolsDataConfig
     }
 };
 
-std::map<unsigned long, std::map<std::string, SymbolDataCandle>> getSymbolsData();
+std::map<unsigned long, std::map<std::string, SymbolDataCandle>> get_symbols_data();
 
-SymbolsDataConfig getSymbolsDataConfig();
+SymbolsDataConfig get_symbols_data_config();
 
 } // namespace Tradistonks

@@ -2,4 +2,4 @@
 
 #include <trading.hpp>
 
-void decisionPhase(const Tradistonks::DecisionPhaseData &data);
+void decision_phase(const Tradistonks::DecisionPhaseData &data);
